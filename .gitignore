@@ -1,0 +1,22 @@
+# User-specific files
+*.suo
+
+# Visual C++ cache files
+src/ipch/
+src/HelloWindow/Debug/
+src/HelloWindow/Release/
+src/HelloWindow/ipch/
+src/LearnOpenGL/Debug/
+src/LearnOpenGL/Release/
+src/LearnOpenGL/ipch/
+*.sdf
+*.opensdf
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+
+# 3rd and include
+
+
+# project
