@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LearnOpenGL", "LearnOpenGL\LearnOpenGL.vcxproj", "{3C2DADE7-78BC-4467-A609-AD754AF33C58}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWindow", "HelloWindow\HelloWindow.vcxproj", "{76EE7699-83A2-48B1-B090-F06520229789}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloMutilAppTest", "HelloMutilAppTest\HelloMutilAppTest.vcxproj", "{5DB25381-2A7F-4551-973B-95BB6FA40B93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{76EE7699-83A2-48B1-B090-F06520229789}.Debug|Win32.Build.0 = Debug|Win32
 		{76EE7699-83A2-48B1-B090-F06520229789}.Release|Win32.ActiveCfg = Release|Win32
 		{76EE7699-83A2-48B1-B090-F06520229789}.Release|Win32.Build.0 = Release|Win32
+		{5DB25381-2A7F-4551-973B-95BB6FA40B93}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5DB25381-2A7F-4551-973B-95BB6FA40B93}.Debug|Win32.Build.0 = Debug|Win32
+		{5DB25381-2A7F-4551-973B-95BB6FA40B93}.Release|Win32.ActiveCfg = Release|Win32
+		{5DB25381-2A7F-4551-973B-95BB6FA40B93}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

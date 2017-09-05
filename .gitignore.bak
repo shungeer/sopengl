@@ -9,9 +9,6 @@ src/HelloWindow/ipch/
 src/LearnOpenGL/Debug/
 src/LearnOpenGL/Release/
 src/LearnOpenGL/ipch/
-src/HelloMutilAppTest/Debug/
-src/HelloMutilAppTest/Release/
-src/HelloMutilAppTest/ipch/
 *.sdf
 *.opensdf
 
