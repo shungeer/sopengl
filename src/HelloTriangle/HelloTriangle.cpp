@@ -14,6 +14,8 @@ void DrawNULLContext();
 void CreateContext1();
 void DrawContext1();
 void DrawContext2();
+void DrawContext3();
+void DrawContext4();
 
 // 渲染函数指针
 void (*gfun)();
@@ -22,10 +24,10 @@ void (*gfun)();
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const unsigned int vbTotal = 2;
-const unsigned int vaTotal = 2;
+const unsigned int vbTotal = 5;
+const unsigned int vaTotal = 5;
 const unsigned int ebTotal = 1;
-const unsigned int spTotal = 1;
+const unsigned int spTotal = 2;
 
 unsigned int gVBOs[vbTotal];
 unsigned int gVAOs[vaTotal];
@@ -133,6 +135,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		gfun = DrawContext2;
 	}
+	else if (key == GLFW_KEY_3 && action == GLFW_PRESS)
+	{
+		gfun = DrawContext3;
+	}
+	else if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+	{
+		gfun = DrawContext4;
+	}
 }
 
 // 创建所有着色器程序
@@ -150,6 +160,12 @@ void BuildShaderProgram()
 		"{\n"
 		"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 		"}\n\0";
+	const char *fragmentShaderSource1 = "#version 330 core\n"
+		"out vec4 FragColor;\n"
+		"void main()\n"
+		"{\n"
+		"   FragColor = vec4(0.5f, 1.0f, 0.2f, 1.0f);\n"
+		"}\n\0";
 
 	// 创建着色器
 	// 顶点着色器
@@ -166,17 +182,29 @@ void BuildShaderProgram()
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
-	// 片元着色器
+	// 片元着色器1
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::FRAG::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+	// 片元着色器2
+	unsigned int fragmentShader1;
+	fragmentShader1 = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader1, 1, &fragmentShaderSource1, NULL);
+	glCompileShader(fragmentShader1);
+	glGetShaderiv(fragmentShader1, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(fragmentShader1, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::FRAG1::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
 	// 链接到一个使用定义着色器渲染的程序
 	gShaderPrograms[0] = glCreateProgram();
 	glAttachShader(gShaderPrograms[0], vertexShader);	// 这个着色器的输出作为下一个定义紧邻着色器的输入
@@ -188,9 +216,22 @@ void BuildShaderProgram()
 		glGetProgramInfoLog(gShaderPrograms[0], 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+	// 链接到一个使用定义着色器渲染的程序2
+	gShaderPrograms[1] = glCreateProgram();
+	glAttachShader(gShaderPrograms[1], vertexShader);	// 这个着色器的输出作为下一个定义紧邻着色器的输入
+	glAttachShader(gShaderPrograms[1], fragmentShader1);
+	glLinkProgram(gShaderPrograms[1]);
+	// 检查着色器是否链接成功
+	glGetProgramiv(gShaderPrograms[1], GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(gShaderPrograms[1], 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
 	// 着色器链接成功后，可以删除相关着色器对象
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
+	glDeleteShader(fragmentShader1);
 }
 
 // 创建所有渲染模型
@@ -215,6 +256,30 @@ void BuildModel()
 		1, 2, 3  // 第二个三角形
 	};
 
+	float vertices3[] = 
+	{
+		-0.5f, 0.0f, 0.0f,
+		0.0f, -0.5f, 0.0f,
+		0.0f, 0.5f, 0.0f,
+		0.0f, 0.5f, 0.0f,
+		0.0f, -0.5f, 0.0f,
+		0.5f, 0.0f, 0.0f
+	};
+
+	float vertices41[] = 
+	{
+		-1.0f, -0.5f, 0.0f,
+		0.0f, -0.5f, 0.0f,
+		-0.5f, 0.5f, 0.0f
+	};
+
+	float vertices42[] =
+	{
+		0.0f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		1.0f, 0.5f, 0.0f
+	};
+
 	// 配置OpenGL解释GPU内存的方式
 	// 创建OpenGL对象
 	glGenBuffers(vbTotal, gVBOs);		// 创建VBO缓冲对象
@@ -232,12 +297,38 @@ void BuildModel()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
 	glBindVertexArray(0);					// 解绑VAO，配置完VAO，暂时还不使用，先解绑
 
-	// 重复上述步骤
+	// 重复上述步骤(四边形)
 	glBindVertexArray(gVAOs[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[1]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gEBOs[0]);	// 指定EBO的缓存目标类型
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
+	glBindVertexArray(0);
+
+	// 两个相连三角形：GLDrawArray
+	glBindVertexArray(gVAOs[2]);
+	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[2]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices3), vertices3, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
+	glBindVertexArray(0);
+
+	// 不相连三角形
+	glBindVertexArray(gVAOs[3]);
+	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[3]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices41), vertices41, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
+	glBindVertexArray(0);
+
+	glBindVertexArray(gVAOs[4]);
+	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[4]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices42), vertices42, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
@@ -275,6 +366,27 @@ void DrawContext2()
 	glUseProgram(gShaderPrograms[0]);
 	glBindVertexArray(gVAOs[1]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
+void DrawContext3()
+{
+	glUseProgram(gShaderPrograms[0]);
+	glBindVertexArray(gVAOs[2]);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+}
+
+void DrawContext4()
+{
+	glUseProgram(gShaderPrograms[0]);
+	glBindVertexArray(gVAOs[3]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+
+	glUseProgram(gShaderPrograms[1]);
+	glBindVertexArray(gVAOs[4]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	glBindVertexArray(0);
 }
 
