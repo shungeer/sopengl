@@ -1,0 +1,282 @@
+#include <iostream>
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
+
+using namespace std;
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+
+void BuildShaderProgram();
+void BuildModel();
+void ClearContext();
+void DrawNULLContext();
+void CreateContext1();
+void DrawContext1();
+void DrawContext2();
+
+// 渲染函数指针
+void (*gfun)();
+
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+const unsigned int vbTotal = 2;
+const unsigned int vaTotal = 2;
+const unsigned int ebTotal = 1;
+const unsigned int spTotal = 1;
+
+unsigned int gVBOs[vbTotal];
+unsigned int gVAOs[vaTotal];
+unsigned int gEBOs[ebTotal];
+unsigned int gShaderPrograms[spTotal];
+
+int main(int argc, CHAR* argv[])
+{
+	// 1.GLFW配置
+	glfwInit();										// 初始化GLFW
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);	// 设置OpenGL主版本号是3
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);	// 设置OpenGL次版本号是3
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	// 设置OpenGL使用核心模式
+	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// 这是mac osx系统确保上述设置起作用的代码
+
+	// 2.创建窗口，设置主上下文
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);		// 窗口对象
+	if (window == NULL)
+	{
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);		// 设置这个窗口的上下文是当前线程的主上下文
+
+	// 3.使用GLAD库获取OpenGL的函数正确地址
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
+
+	// 4.设置OpenGL的视口
+	// 实际上也可以将视口的维度设置为比GLFW的维度小，这样子之后所有的OpenGL渲染将会在一个更小的窗口中显示，这样子的话我们也可以将一些其它元素显示在OpenGL视口之外。
+	glViewport(0, 0, 800, 600);		// 参数说明：左下角位置+宽度+高度
+
+	// 5.注册回调函数（更改视口、处理手柄输入、处理错误消息等）
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);	// 更改视口
+	glfwSetKeyCallback(window, key_callback);							// 键盘输入
+
+	// 6.渲染上下文定义
+	// 1) 创建着色器
+	BuildShaderProgram();
+	// 2) 创建顶点等对象
+	BuildModel();
+
+	// 7.循环渲染
+	gfun = DrawNULLContext;
+	while (!glfwWindowShouldClose(window))
+	{
+		// 渲染命令
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		gfun();		// 绘制
+
+		glfwPollEvents();		// 检查触发事件（键盘、鼠标）+更新窗口状态，并相应调用回调函数
+		glfwSwapBuffers(window);// 交换颜色缓冲
+	}
+
+	// 7.释放窗口相关资源
+	ClearContext();
+	glfwTerminate();
+	return 0;
+}
+
+// 当用户改变窗口的大小的时候，视口也应该被调整
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+}
+// 按键输入
+// 参数说明：key：按下的按键；action：表示按键动作（按下或释放）；mode：表示是否有Ctrl、Shift、Alt、Super等按钮的操作
+// 设置不同的键渲染不同的模型
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+	static bool sbFill = false;
+	// 当用户按下ESC键,我们设置window窗口的WindowShouldClose属性为true
+	// 关闭应用程序
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+	else if (key == GLFW_KEY_W && action == GLFW_PRESS)
+	{// 判断线框模式
+		if (sbFill)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		sbFill = !sbFill;
+	}
+	else if (key == GLFW_KEY_0 && action == GLFW_PRESS)
+	{
+		gfun = DrawNULLContext;
+	}
+	else if (key == GLFW_KEY_1 && action == GLFW_PRESS)
+	{
+		gfun = DrawContext1;
+	}
+	else if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+	{
+		gfun = DrawContext2;
+	}
+}
+
+// 创建所有着色器程序
+void BuildShaderProgram()
+{
+	const char *vertexShaderSource = "#version 330 core\n"
+		"layout (location = 0) in vec3 aPos;\n"
+		"void main()\n"
+		"{\n"
+		"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+		"}\0";
+	const char *fragmentShaderSource = "#version 330 core\n"
+		"out vec4 FragColor;\n"
+		"void main()\n"
+		"{\n"
+		"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+		"}\n\0";
+
+	// 创建着色器
+	// 顶点着色器
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);		// 附加着色器代码
+	glCompileShader(vertexShader);									// 编译着色器代码
+	// 检查着色器是否编译成功
+	int  success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+	// 片元着色器
+	unsigned int fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::FRAG::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+	// 链接到一个使用定义着色器渲染的程序
+	gShaderPrograms[0] = glCreateProgram();
+	glAttachShader(gShaderPrograms[0], vertexShader);	// 这个着色器的输出作为下一个定义紧邻着色器的输入
+	glAttachShader(gShaderPrograms[0], fragmentShader);
+	glLinkProgram(gShaderPrograms[0]);
+	// 检查着色器是否链接成功
+	glGetProgramiv(gShaderPrograms[0], GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(gShaderPrograms[0], 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+	// 着色器链接成功后，可以删除相关着色器对象
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+}
+
+// 创建所有渲染模型
+void BuildModel()
+{
+	// 渲染属性
+	float vertices1[] = {
+		-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		0.0f, 0.5f, 0.0f
+	};
+
+	float vertices2[] = {
+		0.5f, 0.5f, 0.0f,   // 右上角
+		0.5f, -0.5f, 0.0f,  // 右下角
+		-0.5f, -0.5f, 0.0f, // 左下角
+		-0.5f, 0.5f, 0.0f   // 左上角
+	};
+
+	unsigned int indices2[] = { // 注意索引从0开始! 
+		0, 1, 3, // 第一个三角形
+		1, 2, 3  // 第二个三角形
+	};
+
+	// 配置OpenGL解释GPU内存的方式
+	// 创建OpenGL对象
+	glGenBuffers(vbTotal, gVBOs);		// 创建VBO缓冲对象
+	glGenVertexArrays(vaTotal, gVAOs);	// VAO对象
+	glGenBuffers(ebTotal, gEBOs);		// EBO对象
+	// 先绑定VAO（此VAO保存当前设置）
+	glBindVertexArray(gVAOs[0]);
+	// 复制顶点数组到缓冲中供OpenGL使用
+	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[0]);	// 为VBO指定缓存目标类型
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);	// 复制数据到当前绑定的VBO缓冲
+	// glVertexAttribPointer从最近绑定到GL_ARRAY_BUFFER的VBO中获取数据
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);	// 配置解析定义顶点的方式
+	glEnableVertexAttribArray(0);		// 启用顶点属性（以顶点属性位置作为参数）
+	// 当完成glVertexAttribPointer后，表示已经从当前绑定的VBO中获取数据，可以解绑VBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
+	glBindVertexArray(0);					// 解绑VAO，配置完VAO，暂时还不使用，先解绑
+
+	// 重复上述步骤
+	glBindVertexArray(gVAOs[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gEBOs[0]);	// 指定EBO的缓存目标类型
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
+	glBindVertexArray(0);
+}
+
+// 清除渲染上下文
+void ClearContext()
+{
+	glDeleteVertexArrays(vaTotal, gVAOs);
+	glDeleteBuffers(vbTotal, gVBOs);
+	glDeleteBuffers(ebTotal, gEBOs);
+	for (unsigned int i = 0; i < spTotal; i++)
+	{
+		glDeleteProgram(gShaderPrograms[i]);
+	}
+}
+
+void DrawNULLContext()
+{
+	return;
+}
+
+void DrawContext1()
+{
+	// 绘制
+	glUseProgram(gShaderPrograms[0]);		// 激活着色器
+	glBindVertexArray(gVAOs[0]);			// 绑定使用的VAO
+	glDrawArrays(GL_TRIANGLES, 0, 3);	// OpenGL绘制函数
+	glBindVertexArray(0);				// 解绑VAOs
+}
+
+void DrawContext2()
+{
+	glUseProgram(gShaderPrograms[0]);
+	glBindVertexArray(gVAOs[1]);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+
+
+
