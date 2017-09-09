@@ -13,44 +13,13 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="shaders">
-      <UniqueIdentifier>{393958e1-90ed-45c6-b0ba-705fec443d83}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HelloShader.cpp">
+    <ClCompile Include="HelloTexture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\fragment.shader">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\vertex.shader">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\vertex1.shader">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\fragment1.shader">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\vertex2.shader">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\vertex3.shader">
-      <Filter>shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

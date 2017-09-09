@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D8DE7ED2-5911-4602-9B49-157975DAF97D}</ProjectGuid>
+    <ProjectGuid>{D7427C81-C47A-49FA-9ADB-CD414B96FF60}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>HelloShader</RootNamespace>
+    <RootNamespace>HelloTexture</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -83,19 +83,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="glad.c" />
-    <ClCompile Include="HelloShader.cpp" />
-    <ClCompile Include="Shader.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Shader.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\fragment.shader" />
-    <None Include="shaders\fragment1.shader" />
-    <None Include="shaders\vertex.shader" />
-    <None Include="shaders\vertex1.shader" />
-    <None Include="shaders\vertex2.shader" />
-    <None Include="shaders\vertex3.shader" />
+    <ClCompile Include="HelloTexture.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

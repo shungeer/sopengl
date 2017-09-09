@@ -14,6 +14,7 @@ public:
 	void setBool(const string& name, bool value);
 	void setInt(const string& name, int value);
 	void setFloat(const string& name, float value);
+	void setVecf4(const string& name, float v1, float v2, float v3, float v4);
 private:
 	unsigned int m_uiID;		// ×ÅÉ«Æ÷³ÌÐòID
 };

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LearnOpenGL", "LearnOpenGL\LearnOpenGL.vcxproj", "{3C2DADE7-78BC-4467-A609-AD754AF33C58}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTriangle", "HelloTriangle\HelloTriangle.vcxproj", "{2D9C4954-72AB-4353-8108-3A9DC673E301}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloShader", "HelloShader\HelloShader.vcxproj", "{D8DE7ED2-5911-4602-9B49-157975DAF97D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTexture", "HelloTexture\HelloTexture.vcxproj", "{D7427C81-C47A-49FA-9ADB-CD414B96FF60}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{D8DE7ED2-5911-4602-9B49-157975DAF97D}.Debug|Win32.Build.0 = Debug|Win32
 		{D8DE7ED2-5911-4602-9B49-157975DAF97D}.Release|Win32.ActiveCfg = Release|Win32
 		{D8DE7ED2-5911-4602-9B49-157975DAF97D}.Release|Win32.Build.0 = Release|Win32
+		{D7427C81-C47A-49FA-9ADB-CD414B96FF60}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D7427C81-C47A-49FA-9ADB-CD414B96FF60}.Debug|Win32.Build.0 = Debug|Win32
+		{D7427C81-C47A-49FA-9ADB-CD414B96FF60}.Release|Win32.ActiveCfg = Release|Win32
+		{D7427C81-C47A-49FA-9ADB-CD414B96FF60}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

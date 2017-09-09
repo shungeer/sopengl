@@ -1,6 +1,7 @@
 #include <iostream>
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "Shader.h"
 
 using namespace std;
 
@@ -18,6 +19,10 @@ void DrawContext3();
 void DrawContext4();
 void DrawContext5();
 void DrawContext6();
+void DrawContext7();
+void DrawContext8();
+void DrawContext9();
+void DrawContextM();
 
 // 渲染函数指针
 void(*gfun)();
@@ -26,15 +31,17 @@ void(*gfun)();
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const unsigned int vbTotal = 6;
-const unsigned int vaTotal = 6;
+const unsigned int vbTotal = 7;
+const unsigned int vaTotal = 7;
 const unsigned int ebTotal = 1;
 const unsigned int spTotal = 4;
+const unsigned int csTotal = 4;
 
 unsigned int gVBOs[vbTotal];
 unsigned int gVAOs[vaTotal];
 unsigned int gEBOs[ebTotal];
 unsigned int gShaderPrograms[spTotal];
+CShader* gShaders[csTotal];
 
 int main(int argc, CHAR* argv[])
 {
@@ -152,6 +159,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	else if (key == GLFW_KEY_6 && action == GLFW_PRESS)
 	{
 		gfun = DrawContext6;
+	}
+	else if (key == GLFW_KEY_7 && action == GLFW_PRESS)
+	{
+		gfun = DrawContext7;
+	}
+	else if (key == GLFW_KEY_8 && action == GLFW_PRESS)
+	{
+		gfun = DrawContext8;
+	}
+	else if (key == GLFW_KEY_9 && action == GLFW_PRESS)
+	{
+		gfun = DrawContext9;
+	}
+	else if (key == GLFW_KEY_M && action == GLFW_PRESS)
+	{
+		gfun = DrawContextM;
 	}
 }
 
@@ -326,6 +349,12 @@ void BuildShaderProgram()
 	glDeleteShader(fragmentShader1);
 	glDeleteShader(fragmentShader2);
 	glDeleteShader(fragmentShader3);
+
+	// 着色器程序
+	gShaders[0] = new CShader("shaders/vertex.shader", "shaders/fragment.shader");
+	gShaders[1] = new CShader("shaders/vertex1.shader", "shaders/fragment.shader");
+	gShaders[2] = new CShader("shaders/vertex2.shader", "shaders/fragment1.shader");
+	gShaders[3] = new CShader("shaders/vertex3.shader", "shaders/fragment.shader");
 }
 
 // 创建所有渲染模型
@@ -380,6 +409,14 @@ void BuildModel()
 		0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,   // 右下
 		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,   // 左下
 		0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // 顶部
+	};
+
+	float vertices51[] =
+	{
+		// 位置              // 颜色
+		0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,   // 
+		-0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f,   // 
+		0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f    // 
 	};
 
 	// 配置OpenGL解释GPU内存的方式
@@ -448,6 +485,17 @@ void BuildModel()
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
 	glBindVertexArray(0);
+
+	// 顶点颜色不同的三角形2
+	glBindVertexArray(gVAOs[6]);
+	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[6]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices51), vertices51, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
+	glBindVertexArray(0);
 }
 
 // 清除渲染上下文
@@ -459,6 +507,10 @@ void ClearContext()
 	for (unsigned int i = 0; i < spTotal; i++)
 	{
 		glDeleteProgram(gShaderPrograms[i]);
+	}
+	for (unsigned int i = 0; i < csTotal; i++)
+	{
+		delete gShaders[i];
 	}
 }
 
@@ -528,6 +580,45 @@ void DrawContext6()
 	glBindVertexArray(0);
 }
 
+void DrawContext7()
+{
+	gShaders[0]->use();
+	glBindVertexArray(gVAOs[6]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+}
+void DrawContext8()
+{
+	gShaders[1]->use();
+	glBindVertexArray(gVAOs[6]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+}
+void DrawContext9()
+{
+	gShaders[2]->use();
+	// 更新uniform变量（更新之前需要激活着色器）
+	double timeValue = glfwGetTime();
+	float flip = (float)sin(timeValue) / 2.0f;
+	gShaders[2]->setFloat("flipx", flip);
+
+	// 更新uniform颜色
+	gShaders[2]->use();
+	timeValue = glfwGetTime();
+	float blueValue = (float)sin(timeValue) / 2.0f + 0.5f;
+	gShaders[2]->setVecf4("ourColor", 0.0f, 0.0f, blueValue, 1.0f);
+
+	glBindVertexArray(gVAOs[0]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+}
+void DrawContextM()
+{
+	gShaders[3]->use();
+	glBindVertexArray(gVAOs[6]);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+	glBindVertexArray(0);
+}
 
 
 

@@ -7,7 +7,7 @@ using namespace std;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-void DrawNULLContext()
+void DrawNULLContext();
 
 void(*gFun)();
 int main(int argc, CHAR* argv[])
@@ -45,6 +45,7 @@ int main(int argc, CHAR* argv[])
 	glfwSetKeyCallback(window, key_callback);							// º¸≈Ã ‰»Î
 
 	// 6.—≠ª∑‰÷»æ
+	gFun = DrawNULLContext;
 	while (!glfwWindowShouldClose(window))
 	{
 		// ‰÷»æ√¸¡Ó
