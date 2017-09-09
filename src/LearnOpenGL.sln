@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloMutilAppTest", "HelloM
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTriangle", "HelloTriangle\HelloTriangle.vcxproj", "{2D9C4954-72AB-4353-8108-3A9DC673E301}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloShader", "HelloShader\HelloShader.vcxproj", "{D8DE7ED2-5911-4602-9B49-157975DAF97D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,6 +35,10 @@ Global
 		{2D9C4954-72AB-4353-8108-3A9DC673E301}.Debug|Win32.Build.0 = Debug|Win32
 		{2D9C4954-72AB-4353-8108-3A9DC673E301}.Release|Win32.ActiveCfg = Release|Win32
 		{2D9C4954-72AB-4353-8108-3A9DC673E301}.Release|Win32.Build.0 = Release|Win32
+		{D8DE7ED2-5911-4602-9B49-157975DAF97D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D8DE7ED2-5911-4602-9B49-157975DAF97D}.Debug|Win32.Build.0 = Debug|Win32
+		{D8DE7ED2-5911-4602-9B49-157975DAF97D}.Release|Win32.ActiveCfg = Release|Win32
+		{D8DE7ED2-5911-4602-9B49-157975DAF97D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
