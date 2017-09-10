@@ -7,9 +7,19 @@ using namespace std;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 
-void DrawNULLContext()
+void BuildShader();
+void BuildModel();
+void ClearContext();
+void DrawNULLContext();
 
 void(*gFun)();
+
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
+
+
+
 int main(int argc, CHAR* argv[])
 {
 	// 1.GLFW配置
@@ -17,10 +27,12 @@ int main(int argc, CHAR* argv[])
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);	// 设置OpenGL主版本号是3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);	// 设置OpenGL次版本号是3
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	// 设置OpenGL使用核心模式
-	//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);	// 这是mac osx系统确保上述设置起作用的代码
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
 
 	// 2.创建窗口，设置主上下文
-	GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);		// 窗口对象
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);		// 窗口对象
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -38,13 +50,20 @@ int main(int argc, CHAR* argv[])
 
 	// 4.设置OpenGL的视口
 	// 实际上也可以将视口的维度设置为比GLFW的维度小，这样子之后所有的OpenGL渲染将会在一个更小的窗口中显示，这样子的话我们也可以将一些其它元素显示在OpenGL视口之外。
-	glViewport(0, 0, 800, 600);		// 参数说明：左下角位置+宽度+高度
+	glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);		// 参数说明：左下角位置+宽度+高度
 
 	// 5.注册回调函数（更改视口、处理手柄输入、处理错误消息等）
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);	// 更改视口
 	glfwSetKeyCallback(window, key_callback);							// 键盘输入
 
-	// 6.循环渲染
+	// 6.渲染上下文定义
+	// 1) 创建着色器
+	BuildShader();
+	// 2) 创建顶点等对象
+	BuildModel();
+
+	// 7.循环渲染
+	gFun = DrawNULLContext;
 	while (!glfwWindowShouldClose(window))
 	{
 		// 渲染命令
@@ -58,6 +77,7 @@ int main(int argc, CHAR* argv[])
 	}
 
 	// 7.释放窗口相关资源
+	ClearContext();
 	glfwTerminate();
 	return 0;
 }
@@ -84,8 +104,23 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 }
 
-void DrawNULLContext()
+// 创建所有着色器程序
+void BuildShaderProgram()
+{
+	return;
+}
+// 创建所有渲染模型
+void BuildModel()
+{
+	return;
+}
+// 清除渲染上下文
+void ClearContext()
 {
 	return;
 }
 
+void DrawNULLContext()
+{
+	return;
+}
