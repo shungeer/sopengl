@@ -105,7 +105,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 // 创建所有着色器程序
-void BuildShaderProgram()
+void BuildShader()
 {
 	return;
 }
