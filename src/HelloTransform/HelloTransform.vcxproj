@@ -95,6 +95,7 @@
   <ItemGroup>
     <None Include="shaders\fragment.shader" />
     <None Include="shaders\vertex.shader" />
+    <None Include="shaders\vertex1.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

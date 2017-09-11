@@ -303,6 +303,7 @@ void DrawNULLContext();
 void DrawContext1();
 void DrawContext2();
 void DrawContext3();
+void DrawContext4();
 
 void(*gFun)();
 
@@ -313,7 +314,7 @@ const unsigned int SCR_HEIGHT = 600;
 const unsigned int aTotal = 1;
 const unsigned int bTotal = 1;
 const unsigned int eTotal = 1;
-const unsigned int sTotal = 1;
+const unsigned int sTotal = 2;
 const unsigned int tTotal = 2;
 
 unsigned int gVAOs[aTotal];
@@ -422,12 +423,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		gFun = DrawContext3;
 	}
+	else if (key == GLFW_KEY_4 && action == GLFW_PRESS)
+	{
+		gFun = DrawContext4;
+	}
 }
 
 // 创建所有着色器程序
 void BuildShader()
 {
 	gShaders[0] = new CShader("shaders/vertex.shader", "shaders/fragment.shader");
+	gShaders[1] = new CShader("shaders/vertex1.shader", "shaders/fragment.shader");
 }
 // 创建所有渲染模型
 void BuildModel()
@@ -528,6 +534,10 @@ void InitTexture()
 	gShaders[0]->use();
 	gShaders[0]->setInt("texture1", 0);
 	gShaders[0]->setInt("texture2", 1);
+
+	gShaders[1]->use();
+	gShaders[1]->setInt("texture1", 0);
+	gShaders[1]->setInt("texture2", 1);
 }
 // 清除渲染上下文
 void ClearContext()
@@ -616,4 +626,31 @@ void DrawContext3()
 	gShaders[0]->setMat4("transform", transform);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+}
+
+void DrawContext4()
+{
+	// 激活纹理单元并且绑定纹理
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
+
+	glm::mat4 model, view, projection;
+	// 模型矩阵（逆时针旋转为正方向）
+	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	// 视图矩阵（整体向后平移3个单位，使得在投影视锥体内）
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	// 投影矩阵
+	projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+	// 设置着色器
+	gShaders[1]->use();
+	gShaders[1]->setMat4("model", model);
+	gShaders[1]->setMat4("view", view);
+	gShaders[1]->setMat4("projection", projection);
+
+	// 绑定VAO
+	glBindVertexArray(gVAOs[0]);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
