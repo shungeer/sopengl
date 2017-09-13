@@ -13,8 +13,8 @@ namespace cell
 		value_type _v[num_components];
 	public:
 		Vec3(){ _v[0] = value_type(0.0), _v[1] = value_type(0.0); _v[2] = value_type(0.0); }
-		Vec3(value_type x, value_type y, value_type z) { _v[0] = x; _v[1] = y; _v[1] = z; }
-		Vec3(const Vec3<T>& v2, value_type zz) { _v[0] = v2[0]; _v[1] = v2[1]; _v[2] = zz; }
+		Vec3(value_type x, value_type y, value_type z) { _v[0] = x; _v[1] = y; _v[2] = z; }
+		Vec3(const Vec2<T>& v2, value_type zz) { _v[0] = v2[0]; _v[1] = v2[1]; _v[2] = zz; }
 
 		// ‘ÀÀ„∑˚÷ÿ‘ÿ
 		inline bool operator == (const Vec3<T>& v) const { return _v[0] == v._v[0] && _v[1] == v._v[1] && _v[2] == v._v[2]; }
