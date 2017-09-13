@@ -293,6 +293,8 @@ using namespace std;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mousemove_callback(GLFWwindow* window, double xpos, double ypos);
+void mousescroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 void BuildShader();
 void BuildModel();
@@ -304,6 +306,10 @@ void DrawContext1();
 void DrawContext2();
 void DrawContext3();
 void DrawContext4();
+void DrawContext5();
+void DrawContext6();
+void DrawContext7();
+void DrawContext8();
 
 void(*gFun)();
 
@@ -311,8 +317,8 @@ void(*gFun)();
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-const unsigned int aTotal = 1;
-const unsigned int bTotal = 1;
+const unsigned int aTotal = 2;
+const unsigned int bTotal = 2;
 const unsigned int eTotal = 1;
 const unsigned int sTotal = 2;
 const unsigned int tTotal = 2;
@@ -322,6 +328,23 @@ unsigned int gVBOs[bTotal];
 unsigned int gEBOs[eTotal];
 CShader* gShaders[sTotal];
 unsigned int gTexs[tTotal];
+
+float gFov = 45.0f;
+float gViewWidth = SCR_WIDTH;
+float gViewHeight = SCR_HEIGHT;
+float gView1 = 0.0f;
+float gView2 = 0.0f;
+float gView3 = -3.0f;
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+float gDeltaTime = 0.0f;
+float gLastFrame = 0.0f;
+float gPitch = 0.0f;
+float gYaw = -90.0f;
+float gLastX = SCR_WIDTH / 2;
+float gLastY = SCR_HEIGHT/ 2;
+bool gFirstMouse = true;
 
 int main(int argc, CHAR* argv[])
 {
@@ -343,6 +366,7 @@ int main(int argc, CHAR* argv[])
 		return -1;
 	}
 	glfwMakeContextCurrent(window);		// 设置这个窗口的上下文是当前线程的主上下文
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);	// 设置窗口不显示鼠标，且光标不离开窗口
 
 	// 3.使用GLAD库获取OpenGL的函数正确地址
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -358,6 +382,8 @@ int main(int argc, CHAR* argv[])
 	// 5.注册回调函数（更改视口、处理手柄输入、处理错误消息等）
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);	// 更改视口
 	glfwSetKeyCallback(window, key_callback);							// 键盘输入
+	glfwSetCursorPosCallback(window, mousemove_callback);					// 鼠标
+	glfwSetScrollCallback(window, mousescroll_callback);
 
 	// 6.渲染上下文定义
 	// 1) 创建着色器
@@ -371,11 +397,13 @@ int main(int argc, CHAR* argv[])
 
 	// 7.循环渲染
 	gFun = DrawNULLContext;
+	// 开启OpenGL
+	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(window))
 	{
 		// 渲染命令
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		gFun();
 
@@ -401,11 +429,118 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // 设置不同的键渲染不同的模型
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
+	float cameraSpeed = 2.5f * gDeltaTime;
 	// 当用户按下ESC键,我们设置window窗口的WindowShouldClose属性为true
 	// 关闭应用程序
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+	else if (key == GLFW_KEY_P && action == GLFW_PRESS)
+	{
+		gFov += 10.0f;
+		if (gFov > 85.0f)
+		{
+			gFov = 85.0f;
+		}
+	}
+	else if (key == GLFW_KEY_L && action == GLFW_PRESS)
+	{
+		gFov -= 10.0f;
+		if (gFov < 5.0f)
+		{
+			gFov = 5.0f;
+		}
+	}
+	else if (key == GLFW_KEY_O && action == GLFW_PRESS)
+	{
+		gViewWidth += 100.0f; 
+		gViewHeight += 100.0f;
+		if (gViewWidth > 1600.0f)
+		{
+			gViewWidth = 1600.0f;
+		}
+		if (gViewHeight > 1200.0f)
+		{
+			gViewHeight = 1200.0f;
+		}
+	}
+	else if (key == GLFW_KEY_K && action == GLFW_PRESS)
+	{
+		gViewWidth -= 100.0f;
+		gViewHeight -= 100.0f;
+		if (gViewWidth < 8.0f)
+		{
+			gViewWidth = 8.0f;
+		}
+		if (gViewHeight < 6.0f)
+		{
+			gViewHeight = 6.0f;
+		}
+	}
+	else if (key == GLFW_KEY_I && action == GLFW_PRESS)
+	{
+		gView1 += 0.1f;
+		if (gView1 > 1.0f)
+		{
+			gView1 = 1.0f;
+		}
+	}
+	else if (key == GLFW_KEY_J && action == GLFW_PRESS)
+	{
+		gView1 -= 0.1f;
+		if (gView1 < -1.0f)
+		{
+			gView1 = -1.0f;
+		}
+	}
+	else if (key == GLFW_KEY_U && action == GLFW_PRESS)
+	{
+		gView2 += 0.1f;
+		if (gView2 > 1.0f)
+		{
+			gView2 = 1.0f;
+		}
+	}
+	else if (key == GLFW_KEY_H && action == GLFW_PRESS)
+	{
+		gView2 -= 0.1f;
+		if (gView2 < -1.0f)
+		{
+			gView2 = -1.0f;
+		}
+	}
+	else if (key == GLFW_KEY_Y && action == GLFW_PRESS)
+	{
+		gView3 -= 10.f;
+		if (gView3 < -110.0f)
+		{
+			gView3 = -100.0f;
+		}
+	}
+	else if (key == GLFW_KEY_G && action == GLFW_PRESS)
+	{
+		gView3 += 10.f;
+		if (gView3 > 0.0f)
+		{
+			gView3 = -1.0f;
+		}
+	}
+	else if (key == GLFW_KEY_W && GLFW_PRESS)
+	{
+		cameraPos += cameraSpeed * cameraFront;
+	}
+	else if (key == GLFW_KEY_S && GLFW_PRESS)
+	{
+		cameraPos -= cameraSpeed * cameraFront;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 	}
 	else if (key == GLFW_KEY_0 && action == GLFW_PRESS)
 	{
@@ -427,6 +562,69 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		gFun = DrawContext4;
 	}
+	else if (key == GLFW_KEY_5 && action == GLFW_PRESS)
+	{
+		gFun = DrawContext5;
+	}
+	else if (key == GLFW_KEY_6 && action == GLFW_PRESS)
+	{
+		gFun = DrawContext6;
+	}
+	else if (key == GLFW_KEY_7 && action == GLFW_PRESS)
+	{
+		gFun = DrawContext7;
+	}
+	else if (key == GLFW_KEY_8 && action == GLFW_PRESS)
+	{
+		gFun = DrawContext8;
+	}
+}
+
+// 鼠标
+void mousemove_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	if (gFirstMouse)
+	{
+		gLastX = (float)xpos;
+		gLastY = (float)ypos;
+		gFirstMouse = false;
+	}
+	float offsetX = (float)xpos - gLastX;
+	float offsetY = gLastY - (float)ypos;	// y坐标底部到顶部增大
+	gLastX = (float)xpos;
+	gLastY = (float)ypos;
+
+	float sensitivity = 0.05f;
+	offsetX *= sensitivity;
+	offsetY *= sensitivity;
+
+	gYaw += offsetX;
+	gPitch += offsetY;
+
+	if (gPitch > 89.0f)
+	{
+		gPitch = 89.0f;
+	}
+	if (gPitch < -89.0f)
+	{
+		gPitch = -89.0f;
+	}
+
+	glm::vec3 front;
+	front.x = (float)cos(glm::radians(gPitch)) * cos(glm::radians(gYaw));
+	front.y = (float)sin(glm::radians(gPitch));
+	front.z = (float)cos(glm::radians(gPitch)) * sin(glm::radians(gYaw));
+	cameraFront = glm::normalize(front);
+}
+
+void mousescroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	if (gFov >= 1.0f && gFov <= 45.0f)
+		gFov -= (float)yoffset;
+	if (gFov <= 1.0f)
+		gFov = 1.0f;
+	if (gFov >= 45.0f)
+		gFov = 45.0f;
 }
 
 // 创建所有着色器程序
@@ -450,6 +648,50 @@ void BuildModel()
 		1, 2, 3  // second triangle
 	};
 
+	float vertices1[] = {
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+		0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f
+	};
+
 	// 缓存生成
 	glGenVertexArrays(aTotal, gVAOs);
 	glGenBuffers(bTotal, gVBOs);
@@ -462,6 +704,20 @@ void BuildModel()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gEBOs[0]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	// 指定顶点属性
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(sizeof(float)* 3));
+	glEnableVertexAttribArray(1);
+	// 完成glVertexAttribPointer后，表示已经从当前绑定的VBO中获取数据，可以解绑VBO
+	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
+	glBindVertexArray(0);					// 解绑VAO，配置完VAO，暂时还不使用，先解绑
+
+	// vao2
+	// 绑定对象目标和数据
+	glBindVertexArray(gVAOs[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
 	// 指定顶点属性
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -653,4 +909,202 @@ void DrawContext4()
 	// 绑定VAO
 	glBindVertexArray(gVAOs[0]);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void DrawContext5()
+{
+	// 激活纹理单元并且绑定纹理
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
+
+	glm::mat4 model, view, projection;
+	// 模型矩阵（逆时针旋转为正方向）
+	model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+	// 视图矩阵（整体向后平移3个单位，使得在投影视锥体内）
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	// 投影矩阵
+	projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+	// 设置着色器
+	gShaders[1]->use();
+	gShaders[1]->setMat4("model", model);
+	gShaders[1]->setMat4("view", view);
+	gShaders[1]->setMat4("projection", projection);
+
+	// 绑定VAO
+	glBindVertexArray(gVAOs[1]);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+}
+
+void DrawContext6()
+{
+	// 激活纹理单元并且绑定纹理
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
+
+	// 多个立方体
+	// 位置
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(2.0f, 5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f, 3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f, 2.0f, -2.5f),
+		glm::vec3(1.5f, 0.2f, -1.5f),
+		glm::vec3(-1.3f, 1.0f, -1.5f)
+	};
+
+
+	gShaders[1]->use();
+	// 绑定VAO
+	glBindVertexArray(gVAOs[1]);
+
+	// 设定变换矩阵
+	glm::mat4 view, projection;
+	// 视图矩阵（整体向后平移3个单位，使得在投影视锥体内）
+	view = glm::translate(view, glm::vec3(gView1, gView2, gView3));
+	// 投影矩阵
+	projection = glm::perspective(glm::radians(gFov), (float)gViewWidth / (float)gViewHeight, 0.1f, 100.0f);
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		glm::mat4 model;
+		float angle = 20.0f * i;
+		// 模型矩阵（逆时针旋转为正方向）
+		model = glm::translate(model, cubePositions[i]);
+		if (i % 3 == 0)
+		{
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(0.5f, 1.0f, 0.0f));
+		}
+		
+		// 设置着色器
+		gShaders[1]->setMat4("model", model);
+		gShaders[1]->setMat4("view", view);
+		gShaders[1]->setMat4("projection", projection);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+}
+
+void DrawContext7()
+{
+	// 激活纹理单元并且绑定纹理
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
+
+	// 多个立方体
+	// 位置
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(2.0f, 5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f, 3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f, 2.0f, -2.5f),
+		glm::vec3(1.5f, 0.2f, -1.5f),
+		glm::vec3(-1.3f, 1.0f, -1.5f)
+	};
+
+
+	gShaders[1]->use();
+	// 绑定VAO
+	glBindVertexArray(gVAOs[1]);
+
+	// 设定变换矩阵
+	glm::mat4 view, projection;
+	// 视图矩阵（整体向后平移3个单位，使得在投影视锥体内）
+	//view = glm::translate(view, glm::vec3(gView1, gView2, gView3));
+	float radius = 10.0f;
+	float camX = (float)sin(glfwGetTime()) * radius;
+	float camZ = (float)cos(glfwGetTime()) * radius;
+	// 摄像机位置、目标、表示世界空间中的向上向量
+	view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	// 投影矩阵
+	projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		glm::mat4 model;
+		float angle = 20.0f * i;
+		// 模型矩阵（逆时针旋转为正方向）
+		model = glm::translate(model, cubePositions[i]);
+		if ((i+1) % 2 == 0)
+		{
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(0.5f, 1.0f, 0.0f));
+		}
+		
+
+		// 设置着色器
+		gShaders[1]->setMat4("model", model);
+		gShaders[1]->setMat4("view", view);
+		gShaders[1]->setMat4("projection", projection);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+}
+
+void DrawContext8()
+{
+	// 激活纹理单元并且绑定纹理
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
+
+	// 多个立方体
+	// 位置
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(2.0f, 5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f, 3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f, 2.0f, -2.5f),
+		glm::vec3(1.5f, 0.2f, -1.5f),
+		glm::vec3(-1.3f, 1.0f, -1.5f)
+	};
+
+
+	gShaders[1]->use();
+	// 绑定VAO
+	glBindVertexArray(gVAOs[1]);
+
+	// 设定变换矩阵
+	glm::mat4 view, projection;
+	// 视图矩阵（整体向后平移3个单位，使得在投影视锥体内）
+	//view = glm::translate(view, glm::vec3(gView1, gView2, gView3));
+
+	// 摄像机位置、目标、表示世界空间中的向上向量
+	view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+	// 投影矩阵
+	projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	for (unsigned int i = 0; i < 10; i++)
+	{
+		glm::mat4 model;
+		float angle = 20.0f * i;
+		// 模型矩阵（逆时针旋转为正方向）
+		model = glm::translate(model, cubePositions[i]);
+		if ((i + 1) % 2 == 0)
+		{
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angle), glm::vec3(0.5f, 1.0f, 0.0f));
+		}
+		// 设置着色器
+		gShaders[1]->setMat4("model", model);
+		gShaders[1]->setMat4("view", view);
+		gShaders[1]->setMat4("projection", projection);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+
+	float curFrame = (float)glfwGetTime();
+	gDeltaTime = curFrame - gLastFrame;
+	gLastFrame = curFrame;
 }

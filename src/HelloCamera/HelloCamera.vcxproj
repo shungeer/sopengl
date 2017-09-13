@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8C972C0C-4835-47D6-9A3A-A6F9C358F01E}</ProjectGuid>
+    <ProjectGuid>{E3979D18-55B9-4421-8361-42218DCD9090}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>HelloTransform</RootNamespace>
+    <RootNamespace>HelloCamera</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -82,22 +82,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="CellMath.h" />
-    <ClInclude Include="CellVec2.h" />
-    <ClInclude Include="CellVec3.h" />
-    <ClInclude Include="Shader.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="HelloTransform.cpp" />
+    <ClCompile Include="HelloCamera.cpp" />
     <ClCompile Include="Shader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\fragment.shader" />
     <None Include="shaders\vertex.shader" />
-    <None Include="shaders\vertex1.shader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
