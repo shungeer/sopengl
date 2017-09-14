@@ -83,6 +83,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CellMat2.h" />
+    <ClInclude Include="CellMat3.h" />
+    <ClInclude Include="CellMat4.h" />
     <ClInclude Include="CellMath.h" />
     <ClInclude Include="CellVec2.h" />
     <ClInclude Include="CellVec3.h" />

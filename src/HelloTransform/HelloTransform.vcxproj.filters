@@ -39,6 +39,15 @@
     <ClInclude Include="CellVec4.h">
       <Filter>cell</Filter>
     </ClInclude>
+    <ClInclude Include="CellMat2.h">
+      <Filter>cell</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat3.h">
+      <Filter>cell</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat4.h">
+      <Filter>cell</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloTransform.cpp">

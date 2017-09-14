@@ -7,9 +7,7 @@ const float Camera::SPEED = 2.5f;
 const float Camera::SENSITIVITY = 0.1f;
 const float Camera::ZOOM = 45.0f;
 
-Camera::Camera(const glm::vec3& pos = glm::vec3(0.0f, 0.0f, 0.0f),
-	const glm::vec3& up = glm::vec3(0.0f, 1.0f, 0.0f),
-	float yaw = Camera::YAW, float pitch = Camera::PITCH)
+Camera::Camera(const glm::vec3& pos, const glm::vec3& up, float yaw, float pitch)
 	: _vFront(0.0f, 0.0f, -1.0f), 
 	_fMoveSpeed(Camera::SPEED), 
 	_fSensitivty(Camera::SENSITIVITY),
@@ -78,7 +76,7 @@ void Camera::KeybordMove(Camera_Movement direction, float deltatime)
 	}
 }
 
-void Camera::MouseMove(float offsetX, float offsetY, bool constrainPitch = true)
+void Camera::MouseMove(float offsetX, float offsetY, bool constrainPitch)
 {
 	offsetX *= _fSensitivty;
 	offsetY *= _fSensitivty;
