@@ -141,13 +141,13 @@ namespace cell
 			float tmp[9];
 
 			tmp[0] = m_aM[4] * m_aM[8] - m_aM[5] * m_aM[7];
-			tmp[1] = m_aM[5] * m_aM[6] - m_aM[3] * m_aM[8];
-			tmp[2] = m_aM[3] * m_aM[7] - m_aM[4] * m_aM[6];
-			tmp[3] = m_aM[7] * m_aM[2] - m_aM[8] * m_aM[1];
+			tmp[1] = m_aM[7] * m_aM[2] - m_aM[8] * m_aM[1];
+			tmp[2] = m_aM[1] * m_aM[5] - m_aM[2] * m_aM[4];
+			tmp[3] = m_aM[5] * m_aM[6] - m_aM[3] * m_aM[8];
 			tmp[4] = m_aM[0] * m_aM[8] - m_aM[2] * m_aM[6];
-			tmp[5] = m_aM[6] * m_aM[1] - m_aM[7] * m_aM[0];
-			tmp[6] = m_aM[1] * m_aM[5] - m_aM[2] * m_aM[4];
-			tmp[7] = m_aM[2] * m_aM[3] - m_aM[0] * m_aM[5];
+			tmp[5] = m_aM[2] * m_aM[3] - m_aM[0] * m_aM[5];
+			tmp[6] = m_aM[3] * m_aM[7] - m_aM[4] * m_aM[6];
+			tmp[7] = m_aM[6] * m_aM[1] - m_aM[7] * m_aM[0];
 			tmp[8] = m_aM[0] * m_aM[4] - m_aM[1] * m_aM[3];
 
 			// check determinant if it is 0

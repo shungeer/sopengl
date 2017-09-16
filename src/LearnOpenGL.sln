@@ -19,6 +19,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTransform", "HelloTran
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloCamera", "HelloCamera\HelloCamera.vcxproj", "{E3979D18-55B9-4421-8361-42218DCD9090}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloText", "HelloText\HelloText.vcxproj", "{22651F48-52A7-443E-B59E-6BBE22014897}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -57,6 +59,10 @@ Global
 		{E3979D18-55B9-4421-8361-42218DCD9090}.Debug|Win32.Build.0 = Debug|Win32
 		{E3979D18-55B9-4421-8361-42218DCD9090}.Release|Win32.ActiveCfg = Release|Win32
 		{E3979D18-55B9-4421-8361-42218DCD9090}.Release|Win32.Build.0 = Release|Win32
+		{22651F48-52A7-443E-B59E-6BBE22014897}.Debug|Win32.ActiveCfg = Debug|Win32
+		{22651F48-52A7-443E-B59E-6BBE22014897}.Debug|Win32.Build.0 = Debug|Win32
+		{22651F48-52A7-443E-B59E-6BBE22014897}.Release|Win32.ActiveCfg = Release|Win32
+		{22651F48-52A7-443E-B59E-6BBE22014897}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

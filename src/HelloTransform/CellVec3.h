@@ -30,11 +30,19 @@ namespace cell
 		inline value_type & operator [] (int i) { return _v[i]; }
 		inline value_type operator [] (int i) const { return _v[i]; }
 		// µã³Ë
+		inline value_type dot(const Vec3<T>& rhs) const
+		{
+			return *this * rhs;
+		}
 		inline value_type operator * (const Vec3<T>& rhs) const
 		{
 			return _v[0] * rhs._v[0] + _v[1] * rhs._v[1] + _v[2] * rhs._v[2];
 		}
 		// ²æ³Ë
+		inline const Vec3<T> cross(const Vec3<T>& rhs) const
+		{
+			return *this ^ rhs;
+		}
 		inline const Vec3<T> operator ^ (const Vec3<T>& rhs) const
 		{
 			return Vec3f(_v[1] * rhs._v[2] - _v[2] * rhs._v[1],

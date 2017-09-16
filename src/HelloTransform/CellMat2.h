@@ -90,8 +90,8 @@ namespace cell
 
 			float invDeterminant = 1.0f / determinant;
 			inv[0] = invDeterminant * m_aM[3];
-			inv[1] = -invDeterminant * m_aM[2];
-			inv[2] = -invDeterminant * m_aM[1];
+			inv[1] = -invDeterminant * m_aM[1];
+			inv[2] = -invDeterminant * m_aM[2];
 			inv[3] = invDeterminant * m_aM[0];
 			return inv;
 		}
