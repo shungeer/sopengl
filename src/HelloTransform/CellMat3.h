@@ -258,7 +258,7 @@ namespace cell
 				scalar*rhs[3], scalar*rhs[4], scalar*rhs[5], 
 				scalar*rhs[6], scalar*rhs[7], scalar*rhs[8]);
 		}
-		friend Mat3<value_type> operator*(const Vec3<value_type>& vec, const Mat3<value_type>& rhs) // pre-multiplication
+		friend Vec3<value_type> operator*(const Vec3<value_type>& vec, const Mat3<value_type>& rhs) // pre-multiplication
 		{
 			return Vec3<value_type>(vec[0] * rhs[0] + vec[1] * rhs[1] + vec[2] * rhs[2], 
 				vec[0] * rhs[3] + vec[1] * rhs[4] + vec[2] * rhs[5],

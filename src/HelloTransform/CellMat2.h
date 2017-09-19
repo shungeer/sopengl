@@ -152,7 +152,7 @@ namespace cell
 		{
 			return Mat2<value_type>(scalar*rhs[0], scalar*rhs[1], scalar*rhs[2], scalar*rhs[3]);
 		}
-		friend Mat2<value_type> operator*(const Vec2<value_type>& vec, const Mat2<value_type>& rhs) // pre-multiplication
+		friend Vec2<value_type> operator*(const Vec2<value_type>& vec, const Mat2<value_type>& rhs) // pre-multiplication
 		{
 			return Vec2<value_type>(vec[0]*rhs[0] + vec[1]*rhs[1], vec[0]*rhs[2] + vec[1]*rhs[3]);
 		}

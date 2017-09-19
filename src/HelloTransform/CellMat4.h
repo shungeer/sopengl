@@ -623,49 +623,65 @@ namespace cell
 		// operators
 		Mat4<value_type> operator+(const Mat4<value_type>& rhs) const    // add rhs
 		{
-			return Mat4<value_type>(m_aM[0] + rhs[0], m_aM[1] + rhs[1], m_aM[2] + rhs[2],
-				m_aM[3] + rhs[3], m_aM[4] + rhs[4], m_aM[5] + rhs[5],
-				m_aM[6] + rhs[6], m_aM[7] + rhs[7], m_aM[8] + rhs[8]);
+			return Mat4<value_type>(m_aM[0] + rhs[0], m_aM[1] + rhs[1], m_aM[2] + rhs[2], m_aM[3] + rhs[3], 
+				m_aM[4] + rhs[4], m_aM[5] + rhs[5], m_aM[6] + rhs[6], m_aM[7] + rhs[7], 
+				m_aM[8] + rhs[8], m_aM[9] + rhs[9], m_aM[10] + rhs[10], m_aM[11] + rhs[11], 
+				m_aM[12] + rhs[12], m_aM[13] + rhs[13], m_aM[14] + rhs[14], m_aM[15] + rhs[15]);
 		}
 		Mat4<value_type> operator-(const Mat4<value_type>& rhs) const    // subtract rhs
 		{
-			return Mat4<value_type>(m_aM[0] - rhs[0], m_aM[1] - rhs[1], m_aM[2] - rhs[2],
-				m_aM[3] - rhs[3], m_aM[4] - rhs[4], m_aM[5] - rhs[5],
-				m_aM[6] - rhs[6], m_aM[7] - rhs[7], m_aM[8] - rhs[8]);
+			return Mat4<value_type>(m_aM[0] - rhs[0], m_aM[1] - rhs[1], m_aM[2] - rhs[2], m_aM[3] - rhs[3],
+				m_aM[4] - rhs[4], m_aM[5] - rhs[5], m_aM[6] - rhs[6], m_aM[7] - rhs[7],
+				m_aM[8] - rhs[8], m_aM[9] - rhs[9], m_aM[10] - rhs[10], m_aM[11] - rhs[11],
+				m_aM[12] - rhs[12], m_aM[13] - rhs[13], m_aM[14] - rhs[14], m_aM[15] - rhs[15]);
 		}
 		Mat4<value_type>& operator+=(const Mat4<value_type>& rhs)         // add rhs and update this object
 		{
-			m_aM[0] += rhs[0]; m_aM[1] += rhs[1]; m_aM[2] += rhs[2];
-			m_aM[3] += rhs[3]; m_aM[4] += rhs[4]; m_aM[5] += rhs[5];
-			m_aM[6] += rhs[6]; m_aM[7] += rhs[7]; m_aM[8] += rhs[8];
-
+			m_aM[0] += rhs[0]; m_aM[1] += rhs[1]; m_aM[2] += rhs[2]; m_aM[3] += rhs[3]; 
+			m_aM[4] += rhs[4]; m_aM[5] += rhs[5]; m_aM[6] += rhs[6]; m_aM[7] += rhs[7]; 
+			m_aM[8] += rhs[8]; m_aM[9] += rhs[9]; m_aM[10] += rhs[10]; m_aM[11] += rhs[11];
+			m_aM[12] += rhs[12]; m_aM[13] += rhs[13]; m_aM[14] += rhs[14]; m_aM[15] += rhs[15];
 			return *this;
 		}
 		Mat4<value_type>& operator-=(const Mat4<value_type>& rhs)         // subtract rhs and update this object
 		{
-			m_aM[0] -= rhs[0]; m_aM[1] -= rhs[1]; m_aM[2] -= rhs[2];
-			m_aM[3] -= rhs[3]; m_aM[4] -= rhs[4]; m_aM[5] -= rhs[5];
-			m_aM[6] -= rhs[6]; m_aM[7] -= rhs[7]; m_aM[8] -= rhs[8];
-
+			m_aM[0] -= rhs[0]; m_aM[1] -= rhs[1]; m_aM[2] -= rhs[2]; m_aM[3] -= rhs[3];
+			m_aM[4] -= rhs[4]; m_aM[5] -= rhs[5]; m_aM[6] -= rhs[6]; m_aM[7] -= rhs[7];
+			m_aM[8] -= rhs[8]; m_aM[9] -= rhs[9]; m_aM[10] -= rhs[10]; m_aM[11] -= rhs[11];
+			m_aM[12] -= rhs[12]; m_aM[13] -= rhs[13]; m_aM[14] -= rhs[14]; m_aM[15] -= rhs[15];
 			return *this;
 		}
 		Vec4<value_type> operator*(const Vec4<value_type>& rhs) const    // multiplication: v' = M * v
 		{
-			return Vec4<value_type>(m_aM[0] * rhs[0] + m_aM[3] * rhs[1] + m_am[6] * rhs[2],
-				m_aM[1] * rhs[0] + m_aM[4] * rhs[1] + m_am[7] * rhs[2],
-				m_aM[2] * rhs[0] + m_aM[5] * rhs[1] + m_am[8] * rhs[2]);
+			return Vec4<value_type>(m_aM[0] * rhs[0] + m_aM[4] * rhs[1] + m_aM[8] * rhs[2] + m_aM[12] * rhs[3],
+				m_aM[1] * rhs[0] + m_aM[5] * rhs[1] + m_am[9] * rhs[2] + m_aM[13] * rhs[3],
+				m_aM[2] * rhs[0] + m_aM[6] * rhs[1] + m_am[10] * rhs[2] + m_aM[14] * rhs[3],
+				m_aM[3] * rhs[0] + m_aM[7] * rhs[1] + m_am[11] * rhs[2] + m_aM[15] * rhs[3]);
+		}
+		Vec3<value_type> Matrix4::operator*(const Vec3<value_type>& rhs) const
+		{
+			return Vec3<value_type>(m_aM[0] * rhs[0] + m_aM[4] * rhs[1] + m_aM[8] * rhs[2] + m_aM[12],
+				m_aM[1] * rhs[0] + m_aM[5] * rhs[1] + m_aM[9] * rhs[2] + m_aM[13],
+				m_aM[2] * rhs[0] + m_aM[6] * rhs[1] + m_aM[10] * rhs[2] + m_aM[14]);
 		}
 		Mat4<value_type> operator*(const Mat4<value_type>& rhs) const    // multiplication: M3 = M1 * M2
 		{
-			return Mat4<value_type>(m_aM[0] * rhs[0] + m_aM[3] * rhs[1] + m_aM[6] * rhs[2],
-				m_aM[1] * rhs[0] + m_aM[4] * rhs[1] + m_aM[7] * rhs[2],
-				m_aM[2] * rhs[0] + m_aM[5] * rhs[1] + m_aM[8] * rhs[2],
-				m_aM[0] * rhs[3] + m_aM[3] * rhs[4] + m_aM[6] * rhs[5],
-				m_aM[1] * rhs[3] + m_aM[4] * rhs[4] + m_aM[7] * rhs[5],
-				m_aM[2] * rhs[3] + m_aM[5] * rhs[4] + m_aM[8] * rhs[5],
-				m_aM[0] * rhs[6] + m_aM[3] * rhs[7] + m_aM[6] * rhs[8],
-				m_aM[1] * rhs[6] + m_aM[4] * rhs[7] + m_aM[7] * rhs[8],
-				m_aM[2] * rhs[6] + m_aM[5] * rhs[7] + m_aM[8] * rhs[8]);
+			return Mat4<value_type>(m_aM[0] * rhs[0] + m_aM[4] * rhs[1] + m_aM[8] * rhs[2] + m_aM[12] * rhs[3],
+				m_aM[1] * rhs[0] + m_aM[5] * rhs[1] + m_aM[9] * rhs[2] + m_aM[13] * rhs[3],
+				m_aM[2] * rhs[0] + m_aM[6] * rhs[1] + m_aM[10] * rhs[2] + m_aM[11] * rhs[3],
+				m_aM[3] * rhs[0] + m_aM[7] * rhs[1] + m_aM[11] * rhs[2] + m_aM[12] * rhs[3],
+				m_aM[0] * rhs[4] + m_aM[4] * rhs[5] + m_aM[8] * rhs[6] + m_aM[12] * rhs[7],
+				m_aM[1] * rhs[4] + m_aM[5] * rhs[5] + m_aM[9] * rhs[6] + m_aM[13] * rhs[7],
+				m_aM[2] * rhs[4] + m_aM[6] * rhs[5] + m_aM[10] * rhs[6] + m_aM[14] * rhs[7],
+				m_aM[3] * rhs[4] + m_aM[7] * rhs[5] + m_aM[11] * rhs[6] + m_aM[15] * rhs[7],
+				m_aM[0] * rhs[8] + m_aM[4] * rhs[9] + m_aM[8] * rhs[10] + m_aM[12] * rhs[11],
+				m_aM[1] * rhs[8] + m_aM[5] * rhs[9] + m_aM[9] * rhs[10] + m_aM[13] * rhs[11],
+				m_aM[2] * rhs[8] + m_aM[6] * rhs[9] + m_aM[10] * rhs[10] + m_aM[14] * rhs[11],
+				m_aM[3] * rhs[8] + m_aM[7] * rhs[9] + m_aM[11] * rhs[10] + m_aM[15] * rhs[11],
+				m_aM[0] * rhs[12] + m_aM[4] * rhs[13] + m_aM[8] * rhs[14] + m_aM[12] * rhs[15],
+				m_aM[1] * rhs[12] + m_aM[5] * rhs[13] + m_aM[9] * rhs[14] + m_aM[13] * rhs[15],
+				m_aM[2] * rhs[12] + m_aM[6] * rhs[13] + m_aM[10] * rhs[14] + m_aM[14] * rhs[15],
+				m_aM[3] * rhs[12] + m_aM[7] * rhs[13] + m_aM[11] * rhs[14] + m_aM[15] * rhs[15]);
 		}
 		Mat4<value_type>& operator*=(const Mat4<value_type>& rhs)         // multiplication: M1' = M1 * M2
 		{
@@ -673,15 +689,17 @@ namespace cell
 		}
 		bool operator==(const Mat4<value_type>& rhs) const   // exact compare, no epsilon
 		{
-			return (m_aM[0] == rhs[0] && m_aM[1] == rhs[1] && m_aM[2] == rhs[2]
-				&& m_aM[3] == rhs[3] && m_aM[4] == rhs[4] && m_aM[5] == rhs[5]
-				&& m_aM[6] == rhs[6] && m_aM[7] == rhs[7] && m_aM[8] == rhs[8]);
+			return (m_aM[0] == rhs[0] && m_aM[1] == rhs[1] && m_aM[2] == rhs[2] && m_aM[3] == rhs[3] 
+				&& m_aM[4] == rhs[4] && m_aM[5] == rhs[5] && m_aM[6] == rhs[6] && m_aM[7] == rhs[7] 
+				&& m_aM[8] == rhs[8] && m_aM[9] == rhs[9] && m_aM[10] == rhs[10] && m_aM[11] == rhs[11]
+				&& m_aM[12] == rhs[12] && m_aM[13] == rhs[13] && m_aM[14] == rhs[14] && m_aM[15] == rhs[15]);
 		}
 		bool operator!=(const Mat4<value_type>& rhs) const   // exact compare, no epsilon
 		{
-			return (m_aM[0] != rhs[0] || m_aM[1] != rhs[1] || m_aM[2] != rhs[2]
-				|| m_aM[3] != rhs[3] || m_aM[4] != rhs[4] || m_aM[5] != rhs[5]
-				|| m_aM[6] != rhs[6] || m_aM[7] != rhs[7] || m_aM[8] != rhs[8]);
+			return (m_aM[0] != rhs[0] || m_aM[1] != rhs[1] || m_aM[2] != rhs[2] || m_aM[3] != rhs[3]
+				|| m_aM[4] != rhs[4] || m_aM[5] != rhs[5] || m_aM[6] != rhs[6] || m_aM[7] != rhs[7]
+				|| m_aM[8] != rhs[8] || m_aM[9] != rhs[9] || m_aM[10] != rhs[10] || m_aM[11] != rhs[11]
+				|| m_aM[12] != rhs[12] || m_aM[13] != rhs[13] || m_aM[14] != rhs[14] || m_aM[15] != rhs[15]);
 		}
 		value_type operator[](unsigned int index) const           // subscript operator v[0], v[1]
 		{
@@ -695,28 +713,32 @@ namespace cell
 		// friends functions
 		friend Mat4<value_type> operator-(const Mat4<value_type>& rhs)                     // unary operator (-)
 		{
-			return Mat4<value_type>(-rhs[0], -rhs[1], -rhs[2],
-				-rhs[3], -rhs[4], -rhs[5],
-				-rhs[6], -rhs[7], -rhs[8]);
+			return Mat4<value_type>(-rhs[0], -rhs[1], -rhs[2], -rhs[3], 
+				-rhs[4], -rhs[5], -rhs[6], -rhs[7], 
+				-rhs[8], -rhs[9], -rhs[10], -rhs[11], 
+				-rhs[12], , -rhs[13], -rhs[14], -rhs[15]);
 		}
 		friend Mat4<value_type> operator*(value_type scalar, const Mat4<value_type>& rhs)       // pre-multiplication
 		{
-			return Mat4<value_type>(scalar*rhs[0], scalar*rhs[1], scalar*rhs[2],
-				scalar*rhs[3], scalar*rhs[4], scalar*rhs[5],
-				scalar*rhs[6], scalar*rhs[7], scalar*rhs[8]);
+			return Mat4<value_type>(scalar*rhs[0], scalar*rhs[1], scalar*rhs[2], scalar*rhs[3], 
+				scalar*rhs[4], scalar*rhs[5], scalar*rhs[6], scalar*rhs[7], 
+				scalar*rhs[8], scalar*rhs[9], scalar*rhs[10], scalar*rhs[11], 
+				scalar*rhs[12], scalar*rhs[13], scalar*rhs[14], scalar*rhs[15]);
 		}
-		friend Mat4<value_type> operator*(const Vec4<value_type>& vec, const Mat4<value_type>& rhs) // pre-multiplication
+		friend Vec4<value_type> operator*(const Vec4<value_type>& vec, const Mat4<value_type>& rhs) // pre-multiplication
 		{
-			return Vec4<value_type>(vec[0] * rhs[0] + vec[1] * rhs[1] + vec[2] * rhs[2],
-				vec[0] * rhs[3] + vec[1] * rhs[4] + vec[2] * rhs[5],
-				vec[0] * rhs[6] + vec[1] * rhs[7] + vec[2] * rhs[8]);
+			return Vec4<value_type>(vec[0] * rhs[0] + vec[1] * rhs[1] + vec[2] * rhs[2] + vec[3] * rhs[3],
+				vec[0] * rhs[4] + vec[1] * rhs[5] + vec[2] * rhs[6] + vec[3] * rhs[7],
+				vec[0] * rhs[8] + vec[1] * rhs[9] + vec[2] * rhs[10] + vec[3] * rhs[11],
+				vec[0] * rhs[12] + vec[1] * rhs[13] + vec[2] * rhs[14] + vec[3] * rhs[15]);
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Mat4<value_type>& m)
 		{
 			os << std::fixed << std::setprecision(5);
-			os << "[" << std::setw(10) << m[0] << " " << std::setw(10) << m[3] << " " << std::setw(10) << m[6] << "]\n"
-				<< "[" << std::setw(10) << m[1] << " " << std::setw(10) << m[4] << " " << std::setw(10) << m[7] << "]\n"
-				<< "[" << std::setw(10) << m[2] << " " << std::setw(10) << m[5] << " " << std::setw(10) << m[8] << "]\n";
+			os << "[" << std::setw(10) << m[0] << " " << std::setw(10) << m[4] << " " << std::setw(10) << m[8] << " " << std::setw(10) << m[12] << "]\n"
+				<< "[" << std::setw(10) << m[1] << " " << std::setw(10) << m[5] << " " << std::setw(10) << m[9] << " " << std::setw(10) << m[13] << "]\n"
+				<< "[" << std::setw(10) << m[2] << " " << std::setw(10) << m[6] << " " << std::setw(10) << m[10] << " " << std::setw(10) << m[14] << "]\n"
+				<< "[" << std::setw(10) << m[3] << " " << std::setw(10) << m[7] << " " << std::setw(10) << m[11] << " " << std::setw(10) << m[15] << "]\n";
 			os << std::resetiosflags(std::ios_base::fixed | std::ios_base::floatfield);
 			return os;
 		}
