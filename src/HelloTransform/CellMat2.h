@@ -22,6 +22,8 @@ namespace cell
 		Mat2() { Mat2::identity(); }// 单位矩阵
 		Mat2(const value_type src[num_components]) { Mat2::set(src); }
 		Mat2(value_type m0, value_type m1, value_type m2, value_type m3) { Mat2::set(m0, m1, m2, m3); }
+		Mat2(const Mat2<T>& m){ *this = m; }
+		~Mat2();
 
 		// set and get
 		void set(const value_type src[num_components])
@@ -74,21 +76,21 @@ namespace cell
 			m_aM[1] = m_aM[2] = (value_type)0;
 			return *this;
 		}
-		Mat2<value_type>& transpose()   // 矩阵转置
+		const Mat2<value_type> transpose()   // 矩阵转置
 		{
-			std::swap(m_aM[1], m_aM[2]);
-			return *this;
+			//std::swap(m_aM[1], m_aM[2]);
+			return Mat2<value_type>(m_aM[0], m_aM[2], m_aM[1], m_aM[3]);
 		}
-		Mat2<float> invert()		// 逆矩阵(不存在返回单位矩阵)，存在浮点数
+		const Mat2<value_type> invert()		// 逆矩阵(不存在返回单位矩阵)，存在浮点数
 		{
 			value_type determinant = Mat2::getDeterminant();
-			Mat2<float> inv;
+			Mat2<value_type> inv;
 			if (fabs(determinant) <= cell::EPSILON)
 			{
 				return inv;
 			}
 
-			float invDeterminant = 1.0f / determinant;
+			value_type invDeterminant = (value_type)1.0 / determinant;
 			inv[0] = invDeterminant * m_aM[3];
 			inv[1] = -invDeterminant * m_aM[1];
 			inv[2] = -invDeterminant * m_aM[2];
@@ -97,11 +99,15 @@ namespace cell
 		}
 
 		// operators
-		Mat2<value_type> operator+(const Mat2<value_type>& rhs) const    // add rhs
+		const Mat2<value_type>& operator = (const Mat2<value_type>& rhs)
+		{
+			Mat2::set(rhs[0], rhs[1], rhs[2], rhs[3]); return *this;
+		}
+		const Mat2<value_type> operator+(const Mat2<value_type>& rhs) const    // add rhs
 		{
 			return Mat2<value_type>(m_aM[0] + rhs[0], m_aM[1] + rhs[1], m_aM[2] + rhs[2], m_aM[3] + rhs[3]);
 		}
-		Mat2<value_type> operator-(const Mat2<value_type>& rhs) const    // subtract rhs
+		const Mat2<value_type> operator-(const Mat2<value_type>& rhs) const    // subtract rhs
 		{
 			return Mat2<value_type>(m_aM[0] - rhs[0], m_aM[1] - rhs[1], m_aM[2] - rhs[2], m_aM[3] - rhs[3]);
 		}
@@ -113,11 +119,15 @@ namespace cell
 		{
 			m_aM[0] -= rhs[0]; m_aM[1] -= rhs[1]; m_aM[2] -= rhs[2]; m_aM[3] -= rhs[3]; return *this;
 		}
-		Vec2<value_type> operator*(const Vec2<value_type>& rhs) const    // multiplication: v' = M * v
+		const Vec2<value_type> operator*(value_type scalar) const    // multiplication: v' = M * v
+		{
+			return Mat2<value_type>(scalar*m_aM[0], scalar*m_aM[1], scalar*m_aM[2], scalar*m_aM[3]);
+		}
+		const Vec2<value_type> operator*(const Vec2<value_type>& rhs) const    // multiplication: v' = M * v
 		{
 			return Vec2<value_type>(m_aM[0] * rhs[0] + m_aM[2] * rhs[1], m_aM[1] * rhs[0] + m_aM[3] * rhs[1]);
 		}
-		Mat2<value_type> operator*(const Mat2<value_type>& rhs) const    // multiplication: M3 = M1 * M2
+		const Mat2<value_type> operator*(const Mat2<value_type>& rhs) const    // multiplication: M3 = M1 * M2
 		{
 			return Mat2<value_type>(m_aM[0] * rhs[0] + m_aM[2] * rhs[1], m_aM[1] * rhs[0] + m_aM[3] * rhs[1],
 				m_aM[0] * rhs[2] + m_aM[2] * rhs[3], m_aM[1] * rhs[2] + m_aM[3] * rhs[3]);
@@ -142,19 +152,20 @@ namespace cell
 		{
 			return m_aM[index];
 		}
+		const Mat2<value_type> operator-()                     // unary operator (-)
+		{
+			return Mat2<value_type>(-m_aM[0], -m_aM[1], -m_aM[2], -m_aM[3]);
+		}
 
 		// friends functions
-		friend Mat2<value_type> operator-(const Mat2<value_type>& rhs)                     // unary operator (-)
+		
+		friend const Mat2<value_type> operator*(value_type scalar, const Mat2<value_type>& rhs)       // pre-multiplication
 		{
-			return Mat2<value_type>(-rhs[0], -rhs[1], -rhs[2], -rhs[3]);
+			return rhs * scalar;
 		}
-		friend Mat2<value_type> operator*(value_type scalar, const Mat2<value_type>& rhs)       // pre-multiplication
+		friend const Vec2<value_type> operator*(const Vec2<value_type>& vec, const Mat2<value_type>& rhs) // pre-multiplication
 		{
-			return Mat2<value_type>(scalar*rhs[0], scalar*rhs[1], scalar*rhs[2], scalar*rhs[3]);
-		}
-		friend Vec2<value_type> operator*(const Vec2<value_type>& vec, const Mat2<value_type>& rhs) // pre-multiplication
-		{
-			return Vec2<value_type>(vec[0]*rhs[0] + vec[1]*rhs[1], vec[0]*rhs[2] + vec[1]*rhs[3]);
+			return rhs * vec;
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Mat2<value_type>& m)
 		{

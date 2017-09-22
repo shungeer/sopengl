@@ -27,6 +27,8 @@ namespace cell
 		{
 			Mat3::set(m0, m1, m2, m3, m4, m5, m6, m7, m8);
 		}
+		Mat3(const Mat3<T>& m){ *this = m; }
+		~Mat3();
 
 		// set and get
 		void set(const value_type src[num_components])
@@ -120,12 +122,11 @@ namespace cell
 			m_aM[1] = m_aM[2] = m_aM[3] = m_aM[5] = m_aM[6] = m_aM[7] = (value_type)0;
 			return *this;
 		}
-		Mat3<value_type>& transpose()   // 矩阵转置
+		const Mat3<value_type> transpose()   // 矩阵转置
 		{
-			std::swap(m_aM[1], m_aM[3]);
-			std::swap(m_aM[2], m_aM[6]);
-			std::swap(m_aM[5], m_aM[7]);
-			return *this;
+			return Mat3(m_aM[0], m_aM[3], m_aM[6],
+				m_aM[1], m_aM[4], m_aM[7],
+				m_aM[2], m_aM[5], m_aM[8]);
 		}
 		///////////////////////////////////////////////////////////////////////////////
 		// inverse 3x3 matrix
@@ -135,10 +136,10 @@ namespace cell
 		//      = | m5m6-m3m8  m0m8-m2m6  m2m3-m0m5 | / det(M)
 		//        | m3m7-m4m6  m6m1-m7m0  m0m4-m1m3 |
 		///////////////////////////////////////////////////////////////////////////////
-		Mat3<float> invert()		// 逆矩阵(不存在返回单位矩阵)，存在浮点数
+		Mat3<value_type> invert()		// 逆矩阵(不存在返回单位矩阵)，存在浮点数
 		{
-			float determinant, invDeterminant;
-			float tmp[9];
+			value_type determinant, invDeterminant;
+			value_type tmp[9];
 
 			tmp[0] = m_aM[4] * m_aM[8] - m_aM[5] * m_aM[7];
 			tmp[1] = m_aM[7] * m_aM[2] - m_aM[8] * m_aM[1];
@@ -152,7 +153,7 @@ namespace cell
 
 			// check determinant if it is 0
 			determinant = m_aM[0] * tmp[0] + m_aM[1] * tmp[3] + m_aM[2] * tmp[6];
-			Mat3<float> inv;
+			Mat3<value_type> inv;
 			if (fabs(determinant) <= EPSILON)
 			{
 				return inv; // cannot inverse, make it idenety matrix
@@ -174,13 +175,17 @@ namespace cell
 		}
 
 		// operators
-		Mat3<value_type> operator+(const Mat3<value_type>& rhs) const    // add rhs
+		const Mat3<value_type>& operator = (const Mat3<value_type>& rhs)
+		{
+			Mat3::set(rhs[0], rhs[1], rhs[2], rhs[3], rhs[4], rhs[5], rhs[6], rhs[7], rhs[8]); return *this;
+		}
+		const Mat3<value_type> operator+(const Mat3<value_type>& rhs) const    // add rhs
 		{
 			return Mat3<value_type>(m_aM[0] + rhs[0], m_aM[1] + rhs[1], m_aM[2] + rhs[2], 
 				m_aM[3] + rhs[3], m_aM[4] + rhs[4], m_aM[5] + rhs[5],
 				m_aM[6] + rhs[6], m_aM[7] + rhs[7], m_aM[8] + rhs[8]);
 		}
-		Mat3<value_type> operator-(const Mat3<value_type>& rhs) const    // subtract rhs
+		const Mat3<value_type> operator-(const Mat3<value_type>& rhs) const    // subtract rhs
 		{
 			return Mat3<value_type>(m_aM[0] - rhs[0], m_aM[1] - rhs[1], m_aM[2] - rhs[2],
 				m_aM[3] - rhs[3], m_aM[4] - rhs[4], m_aM[5] - rhs[5],
@@ -202,13 +207,20 @@ namespace cell
 
 			return *this;
 		}
-		Vec3<value_type> operator*(const Vec3<value_type>& rhs) const    // multiplication: v' = M * v
+	
+		const Vec3<value_type> operator*(const Vec3<value_type>& rhs) const    // multiplication: v' = M * v
 		{
 			return Vec3<value_type>(m_aM[0] * rhs[0] + m_aM[3] * rhs[1] + m_am[6] * rhs[2],
 				m_aM[1] * rhs[0] + m_aM[4] * rhs[1] + m_am[7] * rhs[2],
 				m_aM[2] * rhs[0] + m_aM[5] * rhs[1] + m_am[8] * rhs[2]);
 		}
-		Mat3<value_type> operator*(const Mat3<value_type>& rhs) const    // multiplication: M3 = M1 * M2
+		const Mat3<value_type> operator*(value_type rhs) const
+		{
+			return Vec3<value_type>(m_aM[0] * rhs, m_aM[1] * rhs, m_aM[2] * rhs,
+				m_aM[3] * rhs, m_aM[4] * rhs, m_aM[5] * rhs,
+				m_aM[6] * rhs, m_aM[7] * rhs, m_aM[8] * rhs);
+		}
+		const Mat3<value_type> operator*(const Mat3<value_type>& rhs) const    // multiplication: M3 = M1 * M2
 		{
 			return Mat3<value_type>(m_aM[0] * rhs[0] + m_aM[3] * rhs[1] + m_aM[6] * rhs[2],
 				m_aM[1] * rhs[0] + m_aM[4] * rhs[1] + m_aM[7] * rhs[2],
@@ -245,24 +257,21 @@ namespace cell
 			return m_aM[index];
 		}
 
-		// friends functions
-		friend Mat3<value_type> operator-(const Mat3<value_type>& rhs)                     // unary operator (-)
+		const Mat3<value_type> operator-()                     // unary operator (-)
 		{
-			return Mat3<value_type>(-rhs[0], -rhs[1], -rhs[2], 
-				-rhs[3], -rhs[4], -rhs[5], 
-				-rhs[6], -rhs[7], -rhs[8]);
+			return Mat3<value_type>(-m_aM[0], -m_aM[1], -m_aM[2],
+				-m_aM[3], -m_aM[4], -m_aM[5],
+				-m_aM[6], -m_aM[7], -m_aM[8]);
 		}
+
+		// friends functions
 		friend Mat3<value_type> operator*(value_type scalar, const Mat3<value_type>& rhs)       // pre-multiplication
 		{
-			return Mat3<value_type>(scalar*rhs[0], scalar*rhs[1], scalar*rhs[2], 
-				scalar*rhs[3], scalar*rhs[4], scalar*rhs[5], 
-				scalar*rhs[6], scalar*rhs[7], scalar*rhs[8]);
+			return rhs * scalar;
 		}
 		friend Vec3<value_type> operator*(const Vec3<value_type>& vec, const Mat3<value_type>& rhs) // pre-multiplication
 		{
-			return Vec3<value_type>(vec[0] * rhs[0] + vec[1] * rhs[1] + vec[2] * rhs[2], 
-				vec[0] * rhs[3] + vec[1] * rhs[4] + vec[2] * rhs[5],
-				vec[0] * rhs[6] + vec[1] * rhs[7] + vec[2] * rhs[8]);
+			return rhs * vec;
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Mat3<value_type>& m)
 		{

@@ -15,11 +15,16 @@ namespace cell
 		Vec4(){ _v[0] = value_type(0.0), _v[1] = value_type(0.0); _v[2] = value_type(0.0); _v[3] = value_type(0.0); }
 		Vec4(value_type x, value_type y, value_type z, value_type w) { _v[0] = x; _v[1] = y; _v[2] = z; _v[3] = w; }
 		Vec4(const Vec3<T>& v3, value_type w) { _v[0] = v3[0]; _v[1] = v3[1]; _v[2] = v3[2]; _v[3] = w; }
+		Vec4(const Vec4<T>& v){ *this = v; }
 		~Vec4();
 
 		// 运算符重载
+		inline const Vec4<T>& operator = (const Vec4<T>& v)
+		{
+			_v[0] = v._v[0]; _v[1] = v._v[1]; _v[2] = v._v[2]; _v[3] = v._v[3]; return *this;
+		}
 		inline bool operator == (const Vec4<T>& v) const { return _v[0] == v._v[0] && _v[1] == v._v[1] && _v[2] == v._v[2] && _v[3] == v._v[3]; }
-		inline bool operator != (const Vec4<T>& v) const { return _v[0] != v._v[0] || _v[1] != v._v[1] && _v[2] != v._v[2] && _v[3] != v._v[3]; }
+		inline bool operator != (const Vec4<T>& v) const { return _v[0] != v._v[0] || _v[1] != v._v[1] || _v[2] != v._v[2] || _v[3] != v._v[3]; }
 		inline bool operator < (const Vec4<T>& v) const
 		{
 			if (_v[0] < v._v[0])      return true;
@@ -88,14 +93,10 @@ namespace cell
 			return _v[0] * _v[0] + _v[1] * _v[1] + _v[2] * _v[2] + _v[3] * _v[3];
 		}
 		// 向量单位化
-		inline value_type normalize()
+		inline const Vec4<T> normalize()
 		{
 			value_type norm = Vec4<T>::length();
-			if (norm>0.0)
-			{
-				*this *= (T)1.0 / norm;
-			}
-			return(norm);
+			return Vec4<T>(_v[0]/norm, _v[1]/norm, _v[2]/norm, _v[3]/norm);
 		}
 
 		// Get and Set
@@ -111,17 +112,16 @@ namespace cell
 		inline value_type y() const { return _v[1]; }
 		inline value_type z() const { return _v[2]; }
 		inline value_type w() const { return _v[3]; }
+
+		// 友元函数
+		friend const Vec4<T> operator*(const value_type lhs, const Vec4<T>& rhs)
+		{
+			return rhs * lhs;
+		}
+		friend std::ostream& operator<<(std::ostream& os, const Vec4<T>& vec)
+		{
+			os << "(" << vec.x() << ", " << vec.y() << ", " << vec.z() << ", " << vec.w() << ")";
+			return os;
+		}
 	};
-
-	template <typename Vec4Type>
-	Vec4Type componentMultiply(const Vec4Type& lhs, const Vec4Type& rhs)
-	{
-		return Vec4Type(lhs[0] * rhs[0], lhs[1] * rhs[1], lhs[2] * rhs[2], lhs[3] * rhs[3]);
-	}
-
-	template <typename Vec4Type>
-	Vec4Type componentDivide(const Vec4Type& lhs, const Vec4Type& rhs)
-	{
-		return Vec4Type(lhs[0] / rhs[0], lhs[1] / rhs[1], lhs[2] / rhs[2], lhs[3] / rhs[3]);
-	}
 }

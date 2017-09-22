@@ -15,10 +15,16 @@ namespace cell
 		Vec3(){ _v[0] = value_type(0.0), _v[1] = value_type(0.0); _v[2] = value_type(0.0); }
 		Vec3(value_type x, value_type y, value_type z) { _v[0] = x; _v[1] = y; _v[2] = z; }
 		Vec3(const Vec2<T>& v2, value_type zz) { _v[0] = v2[0]; _v[1] = v2[1]; _v[2] = zz; }
+		Vec3(const Vec3<T>& v) { *this = v; }
+		~Vec3();
 
 		// 运算符重载
+		inline const Vec3<T>& operator = (const Vec3<T>& v)
+		{
+			_v[0] = v._v[0]; _v[1] = v._v[1]; _v[2] = v._v[2]; return *this;
+		}
 		inline bool operator == (const Vec3<T>& v) const { return _v[0] == v._v[0] && _v[1] == v._v[1] && _v[2] == v._v[2]; }
-		inline bool operator != (const Vec3<T>& v) const { return _v[0] != v._v[0] || _v[1] != v._v[1] && _v[2] != v._v[2]; }
+		inline bool operator != (const Vec3<T>& v) const { return _v[0] != v._v[0] || _v[1] != v._v[1] || _v[2] != v._v[2]; }
 		inline bool operator < (const Vec3<T>& v) const
 		{
 			if (_v[0] < v._v[0])      return true;
@@ -100,14 +106,10 @@ namespace cell
 			return _v[0] * _v[0] + _v[1] * _v[1] + _v[2] * _v[2];
 		}
 		// 向量单位化
-		inline value_type normalize()
+		inline const Vec3<T> normalize()
 		{
 			value_type norm = Vec3<T>::length();
-			if (norm>0.0)
-			{
-				*this *= (T)1.0 / norm;
-			}
-			return(norm);
+			return Vec3<T>(_v[0]/norm, _v[1]/norm, _v[2]/norm);
 		}
 
 		// Get and Set
@@ -124,21 +126,16 @@ namespace cell
 
 		inline bool valid() const { return !isNaN(); }
 		inline bool isNaN() const { return cell::isNaN(_v[0]) || cell::isNaN(_v[1]) || cell::isNaN(_v[2]); }
+
+		// 友元函数
+		friend const Vec3<T> operator*(const value_type lhs, const Vec3<T>& rhs)
+		{
+			return rhs * lhs;
+		}
+		friend std::ostream& operator<<(std::ostream& os, const Vec3<T>& vec)
+		{
+			os << "(" << vec.x() << ", " << vec.y() << ", " << vec.z() << ")";
+			return os;
+		}
 	};
-
-	template <typename Vec3Type>
-	Vec3Type componentMultiply(const Vec3Type& lhs, const Vec3Type& rhs)
-	{
-		return Vec3Type(lhs[0] * rhs[0], lhs[1] * rhs[1], lhs[2] * rhs[2]);
-	}
-
-	template <typename Vec3Type>
-	Vec3Type componentDivide(const Vec3Type& lhs, const Vec3Type& rhs)
-	{
-		return Vec3Type(lhs[0] / rhs[0], lhs[1] / rhs[1], lhs[2] / rhs[2]);
-	}
-
-	const Vec3<float> X_AXIS(1.0f, 0.0f, 0.0f);
-	const Vec3<float> Y_AXIS(0.0f, 1.0f, 0.0f);
-	const Vec3<float> Z_AXIS(0.0f, 0.0f, 1.0f);
 }

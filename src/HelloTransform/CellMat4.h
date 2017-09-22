@@ -30,6 +30,8 @@ namespace cell
 		{
 			Mat4::set(m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15);
 		}
+		Mat4(const Mat4<T>& m){ *this = m; }
+		~Mat4();
 
 		// set and get
 		void set(const value_type src[num_components])
@@ -82,9 +84,9 @@ namespace cell
 		}
 
 		// 3x3余子式
-		value_type getCofactor(float m0, float m1, float m2,
-			float m3, float m4, float m5,
-			float m6, float m7, float m8) const
+		value_type getCofactor(value_type m0, value_type m1, value_type m2,
+			value_type m3, value_type m4, value_type m5,
+			value_type m6, value_type m7, value_type m8) const
 		{
 			return m0 * (m4 * m8 - m5 * m7) -
 				m1 * (m3 * m8 - m5 * m6) +
@@ -144,15 +146,12 @@ namespace cell
 				m_aM[9] = m_aM[11] = m_aM[12] = m_aM[13] = m_aM[14] = (value_type)0;
 			return *this;
 		}
-		Mat4<value_type>& transpose()   // 矩阵转置
+		const Mat4<value_type> transpose()   // 矩阵转置
 		{
-			std::swap(m_aM[1], m_aM[4]);
-			std::swap(m_aM[2], m_aM[8]);
-			std::swap(m_aM[3], m_aM[12]);
-			std::swap(m_aM[6], m_aM[9]);
-			std::swap(m_aM[7], m_aM[13]);
-			std::swap(m_aM[11], m_aM[14]);
-			return *this;
+			return Mat4<value_type>(m_aM[0], m_aM[4], m_aM[8], m_aM[12], 
+				m_aM[1], m_aM[5], m_aM[9], m_aM[13], 
+				m_aM[2], m_aM[6], m_aM[10], m_aM[14],
+				m_aM[3], m_aM[7], m_aM[11], m_aM[15]);
 		}
 		///////////////////////////////////////////////////////////////////////////////
 		// inverse 3x3 matrix
@@ -162,9 +161,9 @@ namespace cell
 		//      = | m5m6-m3m8  m0m8-m2m6  m2m3-m0m5 | / det(M)
 		//        | m3m7-m4m6  m6m1-m7m0  m0m4-m1m3 |
 		///////////////////////////////////////////////////////////////////////////////
-		Mat4<float> invert()		// 逆矩阵(不存在返回单位矩阵)，存在浮点数
+		const Mat4<value_type> invert()		// 逆矩阵(不存在返回单位矩阵)，存在浮点数
 		{
-			Mat4<float> inv;
+			Mat4<value_type> inv;
 			// If the 4th row is [0,0,0,1] then it is affine matrix and
 			// it has no projective transformation.
 			if (m_aM[3] == 0 && m_aM[7] == 0 && m_aM[11] == 0 && m_aM[15] == 1)
@@ -199,12 +198,12 @@ namespace cell
 		//  [ --+-- ]   = [ -----+---------- ]
 		//  [ 0 | 1 ]     [  0   +     1     ]
 		///////////////////////////////////////////////////////////////////////////////
-		Mat4<float> invertAffine()
+		const Mat4<value_type> invertAffine()
 		{
 			// R^-1
 			Mat3<value_type> rotation(m_aM[0], m_aM[1], m_aM[2], m_aM[4], m_aM[5], m_aM[6], m_aM[8], m_aM[9], m_aM[10]);
-			Mat3<float> r = rotation.invert();
-			Mat4<float> m;
+			Mat3<value_type> r = rotation.invert();
+			Mat4<value_type> m;
 			m[0] = r[0];  m[1] = r[1];  m[2] = r[2];
 			m[4] = r[3];  m[5] = r[4];  m[6] = r[5];
 			m[8] = r[6];  m[9] = r[7];  m[10] = r[8];
@@ -229,7 +228,7 @@ namespace cell
 		// If cannot find inverse, return indentity matrix
 		// M^-1 = adj(M) / det(M)
 		///////////////////////////////////////////////////////////////////////////////
-		Mat4<float> invertGeneral()
+		const Mat4<value_type> invertGeneral()
 		{
 			// get cofactors of minor matrices
 			value_type cofactor0 = getCofactor(m_aM[5], m_aM[6], m_aM[7], m_aM[9], m_aM[10], m_aM[11], m_aM[13], m_aM[14], m_aM[15]);
@@ -239,31 +238,31 @@ namespace cell
 
 			// get determinant
 			value_type determinant = m_aM[0] * cofactor0 - m_aM[1] * cofactor1 + m_aM[2] * cofactor2 - m_aM[3] * cofactor3;
-			Mat4<float> m;
+			Mat4<value_type> m;
 			if (fabs(determinant) <= EPSILON)
 			{
 				return m;
 			}
 
 			// get rest of cofactors for adj(M)
-			float cofactor4 = getCofactor(m_aM[1], m_aM[2], m_aM[3], m_aM[9], m_aM[10], m_aM[11], m_aM[13], m_aM[14], m_aM[15]);
-			float cofactor5 = getCofactor(m_aM[0], m_aM[2], m_aM[3], m_aM[8], m_aM[10], m_aM[11], m_aM[12], m_aM[14], m_aM[15]);
-			float cofactor6 = getCofactor(m_aM[0], m_aM[1], m_aM[3], m_aM[8], m_aM[9], m_aM[11], m_aM[12], m_aM[13], m_aM[15]);
-			float cofactor7 = getCofactor(m_aM[0], m_aM[1], m_aM[2], m_aM[8], m_aM[9], m_aM[10], m_aM[12], m_aM[13], m_aM[14]);
+			value_type cofactor4 = getCofactor(m_aM[1], m_aM[2], m_aM[3], m_aM[9], m_aM[10], m_aM[11], m_aM[13], m_aM[14], m_aM[15]);
+			value_type cofactor5 = getCofactor(m_aM[0], m_aM[2], m_aM[3], m_aM[8], m_aM[10], m_aM[11], m_aM[12], m_aM[14], m_aM[15]);
+			value_type cofactor6 = getCofactor(m_aM[0], m_aM[1], m_aM[3], m_aM[8], m_aM[9], m_aM[11], m_aM[12], m_aM[13], m_aM[15]);
+			value_type cofactor7 = getCofactor(m_aM[0], m_aM[1], m_aM[2], m_aM[8], m_aM[9], m_aM[10], m_aM[12], m_aM[13], m_aM[14]);
 
-			float cofactor8 = getCofactor(m_aM[1], m_aM[2], m_aM[3], m_aM[5], m_aM[6], m_aM[7], m_aM[13], m_aM[14], m_aM[15]);
-			float cofactor9 = getCofactor(m_aM[0], m_aM[2], m_aM[3], m_aM[4], m_aM[6], m_aM[7], m_aM[12], m_aM[14], m_aM[15]);
-			float cofactor10 = getCofactor(m_aM[0], m_aM[1], m_aM[3], m_aM[4], m_aM[5], m_aM[7], m_aM[12], m_aM[13], m_aM[15]);
-			float cofactor11 = getCofactor(m_aM[0], m_aM[1], m_aM[2], m_aM[4], m_aM[5], m_aM[6], m_aM[12], m_aM[13], m_aM[14]);
+			value_type cofactor8 = getCofactor(m_aM[1], m_aM[2], m_aM[3], m_aM[5], m_aM[6], m_aM[7], m_aM[13], m_aM[14], m_aM[15]);
+			value_type cofactor9 = getCofactor(m_aM[0], m_aM[2], m_aM[3], m_aM[4], m_aM[6], m_aM[7], m_aM[12], m_aM[14], m_aM[15]);
+			value_type cofactor10 = getCofactor(m_aM[0], m_aM[1], m_aM[3], m_aM[4], m_aM[5], m_aM[7], m_aM[12], m_aM[13], m_aM[15]);
+			value_type cofactor11 = getCofactor(m_aM[0], m_aM[1], m_aM[2], m_aM[4], m_aM[5], m_aM[6], m_aM[12], m_aM[13], m_aM[14]);
 
-			float cofactor12 = getCofactor(m_aM[1], m_aM[2], m_aM[3], m_aM[5], m_aM[6], m_aM[7], m_aM[9], m_aM[10], m_aM[11]);
-			float cofactor13 = getCofactor(m_aM[0], m_aM[2], m_aM[3], m_aM[4], m_aM[6], m_aM[7], m_aM[8], m_aM[10], m_aM[11]);
-			float cofactor14 = getCofactor(m_aM[0], m_aM[1], m_aM[3], m_aM[4], m_aM[5], m_aM[7], m_aM[8], m_aM[9], m_aM[11]);
-			float cofactor15 = getCofactor(m_aM[0], m_aM[1], m_aM[2], m_aM[4], m_aM[5], m_aM[6], m_aM[8], m_aM[9], m_aM[10]);
+			value_type cofactor12 = getCofactor(m_aM[1], m_aM[2], m_aM[3], m_aM[5], m_aM[6], m_aM[7], m_aM[9], m_aM[10], m_aM[11]);
+			value_type cofactor13 = getCofactor(m_aM[0], m_aM[2], m_aM[3], m_aM[4], m_aM[6], m_aM[7], m_aM[8], m_aM[10], m_aM[11]);
+			value_type cofactor14 = getCofactor(m_aM[0], m_aM[1], m_aM[3], m_aM[4], m_aM[5], m_aM[7], m_aM[8], m_aM[9], m_aM[11]);
+			value_type cofactor15 = getCofactor(m_aM[0], m_aM[1], m_aM[2], m_aM[4], m_aM[5], m_aM[6], m_aM[8], m_aM[9], m_aM[10]);
 
 			// build inverse matrix = adj(M) / det(M)
 			// adjugate of M is the transpose of the cofactor matrix of M
-			float invDeterminant = 1.0f / determinant;
+			value_type invDeterminant = (value_type)1.0 / determinant;
 			m[0] = invDeterminant * cofactor0;
 			m[1] = -invDeterminant * cofactor4;
 			m[2] = invDeterminant * cofactor8;
@@ -308,7 +307,7 @@ namespace cell
 		//  [ --+-- ]   =  [ ----+--------- ]    (T denotes 1x3 translation)
 		//  [ 0 | 1 ]      [  0  |     1    ]    (R^T denotes R-transpose)
 		///////////////////////////////////////////////////////////////////////////////
-		Mat4<value_type> invertEuclidean()
+		const Mat4<value_type> invertEuclidean()
 		{
 			Mat4<value_type> inv(*this);
 			// transpose 3x3 rotation matrix part
@@ -352,7 +351,7 @@ namespace cell
 		//       The matrix is invertable even if det(A)=0, so must check det(A) before
 		//       calling this function, and use invertGeneric() instead.
 		///////////////////////////////////////////////////////////////////////////////
-		Mat4<float> invertProjective()
+		const Mat4<value_type> invertProjective()
 		{
 			// partition
 			Mat2<value_type> a(m_aM[0], m_aM[1], m_aM[4], m_aM[5]);
@@ -361,35 +360,35 @@ namespace cell
 			Mat2<value_type> d(m_aM[10], m_aM[11], m_aM[14], m_aM[15]);
 
 			// pre-compute repeated parts
-			Mat2<float> inva = a.invert();             // A^-1
-			Mat2<float> ab = inva * b;     // A^-1 * B
-			Mat2<float> ca = c * inva;     // C * A^-1
-			Mat2<float> cab = ca * b;   // C * A^-1 * B
-			Mat2<float> dcab = d - cab; // D - C * A^-1 * B
+			Mat2<value_type> inva = a.invert();             // A^-1
+			Mat2<value_type> ab = inva * b;     // A^-1 * B
+			Mat2<value_type> ca = c * inva;     // C * A^-1
+			Mat2<value_type> cab = ca * b;   // C * A^-1 * B
+			Mat2<value_type> dcab = d - cab; // D - C * A^-1 * B
 
 			// check determinant if |D - C * A^-1 * B| = 0
 			//NOTE: this function assumes det(A) is already checked. if |A|=0 then,
 			//      cannot use this function.
-			float determinant = dcab[0] * dcab[3] - dcab[1] * dcab[2];
-			Mat4<float> m;
+			value_type determinant = dcab[0] * dcab[3] - dcab[1] * dcab[2];
+			Mat4<value_type> m;
 			if (fabs(determinant) <= EPSILON)
 			{
 				return m;
 			}
 
 			// compute D' and -D'
-			Mat2<float> d1 = dcab;      //  (D - C * A^-1 * B)
-			Mat2<float> invd1 = d1.invert();            //  (D - C * A^-1 * B)^-1
-			Mat2<float> d2 = -invd1;       // -(D - C * A^-1 * B)^-1
+			Mat2<value_type> d1 = dcab;      //  (D - C * A^-1 * B)
+			Mat2<value_type> invd1 = d1.invert();            //  (D - C * A^-1 * B)^-1
+			Mat2<value_type> d2 = -invd1;       // -(D - C * A^-1 * B)^-1
 
 			// compute C'
-			Mat2<float> c1 = d2 * ca;   // -D' * (C * A^-1)
+			Mat2<value_type> c1 = d2 * ca;   // -D' * (C * A^-1)
 
 			// compute B'
-			Mat2<float> b1 = ab * d2;   // (A^-1 * B) * -D'
+			Mat2<value_type> b1 = ab * d2;   // (A^-1 * B) * -D'
 
 			// compute A'
-			Mat2<float> a1 = inva - (ab * c1); // A^-1 - (A^-1 * B) * C'
+			Mat2<value_type> a1 = inva - (ab * c1); // A^-1 - (A^-1 * B) * C'
 
 			// assemble inverse matrix
 			m[0] = a1[0];  m[4] = a1[2]; /*|*/ m[8] = b1[0];  m[12] = b1[2];
@@ -403,142 +402,145 @@ namespace cell
 
 		//////////////////// 变换///////////////////////////////
 		// 平移
-		Mat4<value_type>& translate(const Vec3<value_type>& v)	// 平移
+		const Mat4<value_type> translate(const Vec3<value_type>& v)	// 平移
 		{
-			return Mat4::translate(v.x, v.y, v.z);
+			return Mat4::translate(v.x(), v.y(), v.z());
 		}
-		Mat4<value_type>& translate(float x, float y, float z)	// 平移
+		const Mat4<value_type> translate(value_type x, value_type y, value_type z)	// 平移
 		{
-			m_aM[0] += m_aM[3] * x;   m_aM[4] += m_aM[7] * x;   m_aM[8] += m_aM[11] * x;   m_aM[12] += m_aM[15] * x;
-			m_aM[1] += m_aM[3] * y;   m_aM[5] += m_aM[7] * y;   m_aM[9] += m_aM[11] * y;   m_aM[13] += m_aM[15] * y;
-			m_aM[2] += m_aM[3] * z;   m_aM[6] += m_aM[7] * z;   m_aM[10] += m_aM[11] * z;   m_aM[14] += m_aM[15] * z;
-
-			return *this;
+			return Mat4<value_type>(m_aM[0] + m_aM[3] * x, m_aM[1] + m_aM[3] * y, m_aM[2] + m_aM[3] * z, m_aM[3],
+				m_aM[4] + m_aM[7] * x, m_aM[5] + m_aM[7] * y, m_aM[6] + m_aM[7] * z, m_aM[7],
+				m_aM[8] + m_aM[11] * x, m_aM[9] + m_aM[11] * y, m_aM[10] + m_aM[11] * z, m_aM[11], 
+				m_aM[12] + m_aM[15] * x, m_aM[13] + m_aM[15] * y, m_aM[14] + m_aM[15] * z, m_aM[15]);
 		}
 		
 		// 归一化缩放
-		Mat4<value_type>& scale(float s)
+		const Mat4<value_type> scale(value_type s)
 		{
 			return Mat4::scale(s, s, s);
 		}
 
-		Mat4<value_type>& scale(float x, float y, float z)
+		const Mat4<value_type> scale(value_type x, value_type y, value_type z)
 		{
-			m_aM[0] *= x;   m_aM[4] *= x;   m_aM[8] *= x;   m_aM[12] *= x;
-			m_aM[1] *= y;   m_aM[5] *= y;   m_aM[9] *= y;   m_aM[13] *= y;
-			m_aM[2] *= z;   m_aM[6] *= z;   m_aM[10] *= z;   m_aM[14] *= z;
-			return *this;
+			return Mat4<value_type>(m_aM[0] * x, m_aM[1] * y, m_aM[2]*z,
+				m_aM[4] * x, m_aM[5] * y, m_aM[6]*z, 
+				m_aM[8] * x, m_aM[9] * y, m_aM[10]*z,
+				m_aM[12] * x, m_aM[13] * y, m_aM[14]*z);
 		}
 
 		// 旋转（绕给定的轴旋转多少角度）
-		Mat4<value_type>& rotate(float angle, const Vec3<value_type>& axis)
+		const Mat4<value_type> rotate(value_type angle, const Vec3<value_type>& axis)
 		{
-			return rotate(angle, axis.x, axis.y, axis.z);
+			return Mat4::rotate(angle, axis.x, axis.y, axis.z);
 		}
 
-		Mat4<value_type>& rotate(float angle, float x, float y, float z)
+		const Mat4<value_type> rotate(value_type angle, value_type x, value_type y, value_type z)
 		{
-			float c = cosf(cell::DegreesToRadians(angle));    // cosine
-			float s = sinf(cell::DegreesToRadians(angle));    // sine
-			float c1 = 1.0f - c;                // 1 - c
+			value_type c = cos(cell::DegreesToRadians(angle));    // cosine
+			value_type s = sin(cell::DegreesToRadians(angle));    // sine
+			value_type c1 = (value_type)1.0 - c;                // 1 - c
 			value_type m0 = m_aM[0], m4 = m_aM[4], m8 = m_aM[8], m12 = m_aM[12],
 				m1 = m_aM[1], m5 = m_aM[5], m9 = m_aM[9], m13 = m_aM[13],
 				m2 = m_aM[2], m6 = m_aM[6], m10 = m_aM[10], m14 = m_aM[14];
 
 			// build rotation matrix
-			float r0 = x * x * c1 + c;
-			float r1 = x * y * c1 + z * s;
-			float r2 = x * z * c1 - y * s;
-			float r4 = x * y * c1 - z * s;
-			float r5 = y * y * c1 + c;
-			float r6 = y * z * c1 + x * s;
-			float r8 = x * z * c1 + y * s;
-			float r9 = y * z * c1 - x * s;
-			float r10 = z * z * c1 + c;
+			value_type r0 = x * x * c1 + c;
+			value_type r1 = x * y * c1 + z * s;
+			value_type r2 = x * z * c1 - y * s;
+			value_type r4 = x * y * c1 - z * s;
+			value_type r5 = y * y * c1 + c;
+			value_type r6 = y * z * c1 + x * s;
+			value_type r8 = x * z * c1 + y * s;
+			value_type r9 = y * z * c1 - x * s;
+			value_type r10 = z * z * c1 + c;
 
 			// multiply rotation matrix
-			m_aM[0] = r0 * m0 + r4 * m1 + r8 * m2;
-			m_aM[1] = r1 * m0 + r5 * m1 + r9 * m2;
-			m_aM[2] = r2 * m0 + r6 * m1 + r10* m2;
-			m_aM[4] = r0 * m4 + r4 * m5 + r8 * m6;
-			m_aM[5] = r1 * m4 + r5 * m5 + r9 * m6;
-			m_aM[6] = r2 * m4 + r6 * m5 + r10* m6;
-			m_aM[8] = r0 * m8 + r4 * m9 + r8 * m10;
-			m_aM[9] = r1 * m8 + r5 * m9 + r9 * m10;
-			m_aM[10] = r2 * m8 + r6 * m9 + r10* m10;
-			m_aM[12] = r0 * m12 + r4 * m13 + r8 * m14;
-			m_aM[13] = r1 * m12 + r5 * m13 + r9 * m14;
-			m_aM[14] = r2 * m12 + r6 * m13 + r10* m14;
+			Mat4<value_type> rot;
+			rot[0] = r0 * m0 + r4 * m1 + r8 * m2;
+			rot[1] = r1 * m0 + r5 * m1 + r9 * m2;
+			rot[2] = r2 * m0 + r6 * m1 + r10* m2;
+			rot[4] = r0 * m4 + r4 * m5 + r8 * m6;
+			rot[5] = r1 * m4 + r5 * m5 + r9 * m6;
+			rot[6] = r2 * m4 + r6 * m5 + r10* m6;
+			rot[8] = r0 * m8 + r4 * m9 + r8 * m10;
+			rot[9] = r1 * m8 + r5 * m9 + r9 * m10;
+			rot[10] = r2 * m8 + r6 * m9 + r10* m10;
+			rot[12] = r0 * m12 + r4 * m13 + r8 * m14;
+			rot[13] = r1 * m12 + r5 * m13 + r9 * m14;
+			rot[14] = r2 * m12 + r6 * m13 + r10* m14;
 
-			return *this;
+			return rot;
 		}
-		Mat4<value_type>& rotateX(float angle)
+		const Mat4<value_type> rotateX(value_type angle)
 		{
-			float c = cosf(cell::DegreesToRadians(angle));    // cosine
-			float s = sinf(cell::DegreesToRadians(angle));    // sine
+			value_type c = cos(cell::DegreesToRadians(angle));    // cosine
+			value_type s = sin(cell::DegreesToRadians(angle));    // sine
 			value_type m1 = m_aM[1], m2 = m_aM[2],
 				m5 = m_aM[5], m6 = m_aM[6],
 				m9 = m_aM[9], m10 = m_aM[10],
 				m13 = m_aM[13], m14 = m_aM[14];
 
-			m_aM[1] = m1 * c + m2 *-s;
-			m_aM[2] = m1 * s + m2 * c;
-			m_aM[5] = m5 * c + m6 *-s;
-			m_aM[6] = m5 * s + m6 * c;
-			m_aM[9] = m9 * c + m10*-s;
-			m_aM[10] = m9 * s + m10* c;
-			m_aM[13] = m13* c + m14*-s;
-			m_aM[14] = m13* s + m14* c;
+			Mat4<value_type> rot;
+			rot[1] = m1 * c + m2 *-s;
+			rot[2] = m1 * s + m2 * c;
+			rot[5] = m5 * c + m6 *-s;
+			rot[6] = m5 * s + m6 * c;
+			rot[9] = m9 * c + m10*-s;
+			rot[10] = m9 * s + m10* c;
+			rot[13] = m13* c + m14*-s;
+			rot[14] = m13* s + m14* c;
 
-			return *this;
+			return rot;
 		}
 
-		Mat4<value_type>& rotateY(float angle)
+		const Mat4<value_type> rotateY(value_type angle)
 		{
-			float c = cosf(cell::DegreesToRadians(angle));    // cosine
-			float s = sinf(cell::DegreesToRadians(angle));    // sine
-			float m0 = m_aM[0], m2 = m_aM[2],
+			value_type c = cos(cell::DegreesToRadians(angle));    // cosine
+			value_type s = sin(cell::DegreesToRadians(angle));    // sine
+			value_type m0 = m_aM[0], m2 = m_aM[2],
 				m4 = m_aM[4], m6 = m_aM[6],
 				m8 = m_aM[8], m10 = m_aM[10],
 				m12 = m_aM[12], m14 = m_aM[14];
 
-			m_aM[0] = m0 * c + m2 * s;
-			m_aM[2] = m0 *-s + m2 * c;
-			m_aM[4] = m4 * c + m6 * s;
-			m_aM[6] = m4 *-s + m6 * c;
-			m_aM[8] = m8 * c + m10* s;
-			m_aM[10] = m8 *-s + m10* c;
-			m_aM[12] = m12* c + m14* s;
-			m_aM[14] = m12*-s + m14* c;
+			Mat4<value_type> rot;
+			rot[0] = m0 * c + m2 * s;
+			rot[2] = m0 *-s + m2 * c;
+			rot[4] = m4 * c + m6 * s;
+			rot[6] = m4 *-s + m6 * c;
+			rot[8] = m8 * c + m10* s;
+			rot[10] = m8 *-s + m10* c;
+			rot[12] = m12* c + m14* s;
+			rot[14] = m12*-s + m14* c;
 
-			return *this;
+			return rot;
 		}
 
-		Mat4<value_type>& rotateZ(float angle)
+		const Mat4<value_type> rotateZ(value_type angle)
 		{
-			float c = cosf(cell::DegreesToRadians(angle));    // cosine
-			float s = sinf(cell::DegreesToRadians(angle));    // sine
-			float m0 = m_aM[0], m1 = m_aM[1],
+			value_type c = cos(cell::DegreesToRadians(angle));    // cosine
+			value_type s = sin(cell::DegreesToRadians(angle));    // sine
+			value_type m0 = m_aM[0], m1 = m_aM[1],
 				m4 = m_aM[4], m5 = m_aM[5],
 				m8 = m_aM[8], m9 = m_aM[9],
 				m12 = m_aM[12], m13 = m_aM[13];
 
-			m_aM[0] = m0 * c + m1 *-s;
-			m_aM[1] = m0 * s + m1 * c;
-			m_aM[4] = m4 * c + m5 *-s;
-			m_aM[5] = m4 * s + m5 * c;
-			m_aM[8] = m8 * c + m9 *-s;
-			m_aM[9] = m8 * s + m9 * c;
-			m_aM[12] = m12* c + m13*-s;
-			m_aM[13] = m12* s + m13* c;
+			Mat4<value_type> rot;
+			rot[0] = m0 * c + m1 *-s;
+			rot[1] = m0 * s + m1 * c;
+			rot[4] = m4 * c + m5 *-s;
+			rot[5] = m4 * s + m5 * c;
+			rot[8] = m8 * c + m9 *-s;
+			rot[9] = m8 * s + m9 * c;
+			rot[12] = m12* c + m13*-s;
+			rot[13] = m12* s + m13* c;
 
-			return *this;
+			return rot;
 		}
 		// lookat矩阵
-		Mat4<value_type>& lookAt(const Vec3<value_type>& target)
+		const Mat4<value_type> lookAt(const Vec3<value_type>& target)
 		{
 			// compute forward vector and normalize
-			Vec3<value_type> position = Vec3<value_type>(m[12], m[13], m[14]);
+			Vec3<value_type> position = Vec3<value_type>(m_aM[12], m_aM[13], m_aM[14]);
 			Vec3<value_type> forward = target - position;
 			forward.normalize();
 			Vec3<value_type> up;             // up vector of object
@@ -570,16 +572,17 @@ namespace cell
 			//up.normalize();
 
 			// NOTE: overwrite rotation and scale info of the current matrix
-			this->setColumn(0, left);
-			this->setColumn(1, up);
-			this->setColumn(2, forward);
+			Mat4<value_type> lkm;
+			lkm->setColumn(0, left);
+			lkm->setColumn(1, up);
+			lkm->setColumn(2, forward);
 
-			return *this;
+			return lkm;
 		}
-		Mat4<value_type>& lookAt(const Vec3<value_type>& target, const Vec3<value_type>& upVec)
+		const Mat4<value_type> lookAt(const Vec3<value_type>& target, const Vec3<value_type>& upVec)
 		{
 			// compute forward vector and normalize
-			Vec3<value_type> position = Vec3<value_type>(m[12], m[13], m[14]);
+			Vec3<value_type> position = Vec3<value_type>(m_aM[12], m_aM[13], m_aM[14]);
 			Vec3<value_type> forward = target - position;
 			forward.normalize();
 
@@ -592,19 +595,20 @@ namespace cell
 			up.normalize();
 
 			// NOTE: overwrite rotation and scale info of the current matrix
-			this->setColumn(0, left);
-			this->setColumn(1, up);
-			this->setColumn(2, forward);
+			Mat4<value_type> lkm;
+			lkm->setColumn(0, left);
+			lkm->setColumn(1, up);
+			lkm->setColumn(2, forward);
 
-			return *this;
+			return lkm;
 		}
 
-		Mat4<value_type>& lookAt(value_type tx, value_type ty, value_type tz)
+		const Mat4<value_type> lookAt(value_type tx, value_type ty, value_type tz)
 		{
 			return lookAt(Vec3<value_type>(tx, ty, tz));
 		}
 
-		Mat4<value_type>& lookAt(value_type tx, value_type ty, value_type tz, value_type ux, value_type uy, value_type uz)
+		const Mat4<value_type> lookAt(value_type tx, value_type ty, value_type tz, value_type ux, value_type uy, value_type uz)
 		{
 			return lookAt(Vec3<value_type>(tx, ty, tz), Vec3<value_type>(ux, uy, uz));
 		}
@@ -621,14 +625,22 @@ namespace cell
 				m_aM[8], m_aM[9], m_aM[10]);
 		}
 		// operators
-		Mat4<value_type> operator+(const Mat4<value_type>& rhs) const    // add rhs
+		const Mat4<value_type>& operator = (const Mat4<value_type>& rhs)
+		{
+			m_aM[0] = rhs[0]; m_aM[1] = rhs[1]; m_aM[2] = rhs[2]; m_aM[3] = rhs[3];
+			m_aM[4] = rhs[4]; m_aM[5] = rhs[5]; m_aM[6] = rhs[6]; m_aM[7] = rhs[7];
+			m_aM[8] = rhs[8]; m_aM[9] = rhs[9]; m_aM[10] = rhs[10]; m_aM[11] = rhs[11];
+			m_aM[12] = rhs[12]; m_aM[13] = rhs[13]; m_aM[14] = rhs[14]; m_aM[15] = rhs[15];
+			return *this;
+		}
+		const Mat4<value_type> operator+(const Mat4<value_type>& rhs) const    // add rhs
 		{
 			return Mat4<value_type>(m_aM[0] + rhs[0], m_aM[1] + rhs[1], m_aM[2] + rhs[2], m_aM[3] + rhs[3], 
 				m_aM[4] + rhs[4], m_aM[5] + rhs[5], m_aM[6] + rhs[6], m_aM[7] + rhs[7], 
 				m_aM[8] + rhs[8], m_aM[9] + rhs[9], m_aM[10] + rhs[10], m_aM[11] + rhs[11], 
 				m_aM[12] + rhs[12], m_aM[13] + rhs[13], m_aM[14] + rhs[14], m_aM[15] + rhs[15]);
 		}
-		Mat4<value_type> operator-(const Mat4<value_type>& rhs) const    // subtract rhs
+		const Mat4<value_type> operator-(const Mat4<value_type>& rhs) const    // subtract rhs
 		{
 			return Mat4<value_type>(m_aM[0] - rhs[0], m_aM[1] - rhs[1], m_aM[2] - rhs[2], m_aM[3] - rhs[3],
 				m_aM[4] - rhs[4], m_aM[5] - rhs[5], m_aM[6] - rhs[6], m_aM[7] - rhs[7],
@@ -651,20 +663,27 @@ namespace cell
 			m_aM[12] -= rhs[12]; m_aM[13] -= rhs[13]; m_aM[14] -= rhs[14]; m_aM[15] -= rhs[15];
 			return *this;
 		}
-		Vec4<value_type> operator*(const Vec4<value_type>& rhs) const    // multiplication: v' = M * v
+		const Vec4<value_type> operator*(const Vec4<value_type>& rhs) const    // multiplication: v' = M * v
 		{
 			return Vec4<value_type>(m_aM[0] * rhs[0] + m_aM[4] * rhs[1] + m_aM[8] * rhs[2] + m_aM[12] * rhs[3],
 				m_aM[1] * rhs[0] + m_aM[5] * rhs[1] + m_am[9] * rhs[2] + m_aM[13] * rhs[3],
 				m_aM[2] * rhs[0] + m_aM[6] * rhs[1] + m_am[10] * rhs[2] + m_aM[14] * rhs[3],
 				m_aM[3] * rhs[0] + m_aM[7] * rhs[1] + m_am[11] * rhs[2] + m_aM[15] * rhs[3]);
 		}
-		Vec3<value_type> Matrix4::operator*(const Vec3<value_type>& rhs) const
+		const Vec3<value_type> Matrix4::operator*(const Vec3<value_type>& rhs) const
 		{
 			return Vec3<value_type>(m_aM[0] * rhs[0] + m_aM[4] * rhs[1] + m_aM[8] * rhs[2] + m_aM[12],
 				m_aM[1] * rhs[0] + m_aM[5] * rhs[1] + m_aM[9] * rhs[2] + m_aM[13],
 				m_aM[2] * rhs[0] + m_aM[6] * rhs[1] + m_aM[10] * rhs[2] + m_aM[14]);
 		}
-		Mat4<value_type> operator*(const Mat4<value_type>& rhs) const    // multiplication: M3 = M1 * M2
+		const Mat4<value_type> operator*(value_type rhs) const
+		{
+			return Mat4<value_type>(m_aM[0] * rhs, m_aM[1] * rhs, m_aM[2] * rhs, m_aM[3] * rhs,
+				m_aM[4] * rhs, m_aM[5] * rhs, m_aM[6] * rhs, m_aM[7] * rhs,
+				m_aM[8] * rhs, m_aM[9] * rhs, m_aM[10] * rhs, m_aM[11] * rhs,
+				m_aM[12] * rhs, m_aM[13] * rhs, m_aM[14] * rhs, m_aM[15] * rhs);
+		}
+		const Mat4<value_type> operator*(const Mat4<value_type>& rhs) const    // multiplication: M3 = M1 * M2
 		{
 			return Mat4<value_type>(m_aM[0] * rhs[0] + m_aM[4] * rhs[1] + m_aM[8] * rhs[2] + m_aM[12] * rhs[3],
 				m_aM[1] * rhs[0] + m_aM[5] * rhs[1] + m_aM[9] * rhs[2] + m_aM[13] * rhs[3],
@@ -709,28 +728,22 @@ namespace cell
 		{
 			return m_aM[index];
 		}
+		const Mat4<value_type> operator-()                     // unary operator (-)
+		{
+			return Mat4<value_type>(-m_aM[0], -m_aM[1], -m_aM[2], -m_aM[3],
+				-m_aM[4], -m_aM[5], -m_aM[6], -m_aM[7],
+				-m_aM[8], -m_aM[9], -m_aM[10], -m_aM[11],
+				-m_aM[12], -m_aM[13], -m_aM[14], -m_aM[15]);
+		}
 
 		// friends functions
-		friend Mat4<value_type> operator-(const Mat4<value_type>& rhs)                     // unary operator (-)
-		{
-			return Mat4<value_type>(-rhs[0], -rhs[1], -rhs[2], -rhs[3], 
-				-rhs[4], -rhs[5], -rhs[6], -rhs[7], 
-				-rhs[8], -rhs[9], -rhs[10], -rhs[11], 
-				-rhs[12], , -rhs[13], -rhs[14], -rhs[15]);
-		}
 		friend Mat4<value_type> operator*(value_type scalar, const Mat4<value_type>& rhs)       // pre-multiplication
 		{
-			return Mat4<value_type>(scalar*rhs[0], scalar*rhs[1], scalar*rhs[2], scalar*rhs[3], 
-				scalar*rhs[4], scalar*rhs[5], scalar*rhs[6], scalar*rhs[7], 
-				scalar*rhs[8], scalar*rhs[9], scalar*rhs[10], scalar*rhs[11], 
-				scalar*rhs[12], scalar*rhs[13], scalar*rhs[14], scalar*rhs[15]);
+			return rhs * scalar;
 		}
 		friend Vec4<value_type> operator*(const Vec4<value_type>& vec, const Mat4<value_type>& rhs) // pre-multiplication
 		{
-			return Vec4<value_type>(vec[0] * rhs[0] + vec[1] * rhs[1] + vec[2] * rhs[2] + vec[3] * rhs[3],
-				vec[0] * rhs[4] + vec[1] * rhs[5] + vec[2] * rhs[6] + vec[3] * rhs[7],
-				vec[0] * rhs[8] + vec[1] * rhs[9] + vec[2] * rhs[10] + vec[3] * rhs[11],
-				vec[0] * rhs[12] + vec[1] * rhs[13] + vec[2] * rhs[14] + vec[3] * rhs[15]);
+			return rhs * vec;
 		}
 		friend std::ostream& operator<<(std::ostream& os, const Mat4<value_type>& m)
 		{
