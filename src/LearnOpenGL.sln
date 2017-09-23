@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloText", "HelloText\Hell
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloDepth", "HelloDepth\HelloDepth.vcxproj", "{FE7BBD37-11CC-4C57-8FF7-993EEFAAFAA0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloTestCell", "HelloTestCell\HelloTestCell.vcxproj", "{EDBDA57E-B226-42BD-9D38-B369E26709B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -69,6 +71,10 @@ Global
 		{FE7BBD37-11CC-4C57-8FF7-993EEFAAFAA0}.Debug|Win32.Build.0 = Debug|Win32
 		{FE7BBD37-11CC-4C57-8FF7-993EEFAAFAA0}.Release|Win32.ActiveCfg = Release|Win32
 		{FE7BBD37-11CC-4C57-8FF7-993EEFAAFAA0}.Release|Win32.Build.0 = Release|Win32
+		{EDBDA57E-B226-42BD-9D38-B369E26709B0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{EDBDA57E-B226-42BD-9D38-B369E26709B0}.Debug|Win32.Build.0 = Debug|Win32
+		{EDBDA57E-B226-42BD-9D38-B369E26709B0}.Release|Win32.ActiveCfg = Release|Win32
+		{EDBDA57E-B226-42BD-9D38-B369E26709B0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
