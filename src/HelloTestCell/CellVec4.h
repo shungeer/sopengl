@@ -16,7 +16,7 @@ namespace cell
 		Vec4(value_type x, value_type y, value_type z, value_type w) { _v[0] = x; _v[1] = y; _v[2] = z; _v[3] = w; }
 		Vec4(const Vec3<T>& v3, value_type w) { _v[0] = v3[0]; _v[1] = v3[1]; _v[2] = v3[2]; _v[3] = w; }
 		Vec4(const Vec4<T>& v){ *this = v; }
-		~Vec4();
+		~Vec4(){}
 
 		// 运算符重载
 		inline const Vec4<T>& operator = (const Vec4<T>& v)
@@ -93,10 +93,11 @@ namespace cell
 			return _v[0] * _v[0] + _v[1] * _v[1] + _v[2] * _v[2] + _v[3] * _v[3];
 		}
 		// 向量单位化
-		inline const Vec4<T> normalize()
+		inline Vec4<T>& normalize()
 		{
-			value_type norm = Vec4<T>::length();
-			return Vec4<T>(_v[0]/norm, _v[1]/norm, _v[2]/norm, _v[3]/norm);
+			value_type norm = (T)1.0 / Vec4<T>::length();
+			*this *= norm;
+			return *this;
 		}
 
 		// Get and Set

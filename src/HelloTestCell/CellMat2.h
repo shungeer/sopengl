@@ -16,14 +16,14 @@ namespace cell
 		enum 
 		{ 
 			num_cell = 2,		// 每行或者每列多少个元素
-			num_components = pow(num_cell, 2)
+			num_components = num_cell * num_cell
 		};
 	public:
 		Mat2() { Mat2::identity(); }// 单位矩阵
 		Mat2(const value_type src[num_components]) { Mat2::set(src); }
 		Mat2(value_type m0, value_type m1, value_type m2, value_type m3) { Mat2::set(m0, m1, m2, m3); }
 		Mat2(const Mat2<T>& m){ *this = m; }
-		~Mat2();
+		~Mat2(){}
 
 		// set and get
 		void set(const value_type src[num_components])
@@ -64,9 +64,9 @@ namespace cell
 		//     | s  c |
 		// angle = atan(s / c)
 		///////////////////////////////////////////////////////////////////////////////
-		float getAngle() const                       // retrieve angle (degree) from matrix
+		value_type getAngle() const                       // retrieve angle (degree) from matrix
 		{
-			return atan2f(m_aM[1], m_aM[0]);
+			return atan2(m_aM[1], m_aM[0]);
 		}
 
 		// 矩阵性质
@@ -76,26 +76,29 @@ namespace cell
 			m_aM[1] = m_aM[2] = (value_type)0;
 			return *this;
 		}
-		const Mat2<value_type> transpose()   // 矩阵转置
+		Mat2<value_type>& transpose()   // 矩阵转置
 		{
-			//std::swap(m_aM[1], m_aM[2]);
-			return Mat2<value_type>(m_aM[0], m_aM[2], m_aM[1], m_aM[3]);
+			std::swap(m_aM[1], m_aM[2]);
+			//return Mat2<value_type>(m_aM[0], m_aM[2], m_aM[1], m_aM[3]);
+			return *this;
 		}
-		const Mat2<value_type> invert()		// 逆矩阵(不存在返回单位矩阵)，存在浮点数
+		Mat2<value_type>& invert()		// 逆矩阵(不存在返回单位矩阵)，存在浮点数
 		{
 			value_type determinant = Mat2::getDeterminant();
-			Mat2<value_type> inv;
+			//Mat2<value_type> inv;
 			if (fabs(determinant) <= cell::EPSILON)
 			{
-				return inv;
+				return Mat2::identity();
 			}
 
+			value_type tmp = m_aM[0];
 			value_type invDeterminant = (value_type)1.0 / determinant;
-			inv[0] = invDeterminant * m_aM[3];
-			inv[1] = -invDeterminant * m_aM[1];
-			inv[2] = -invDeterminant * m_aM[2];
-			inv[3] = invDeterminant * m_aM[0];
-			return inv;
+			m_aM[0] = invDeterminant * m_aM[3];
+			m_aM[1] = -invDeterminant * m_aM[1];
+			m_aM[2] = -invDeterminant * m_aM[2];
+			m_aM[3] = invDeterminant * tmp;
+			//return inv;
+			return *this;
 		}
 
 		// operators
@@ -166,7 +169,7 @@ namespace cell
 		template <typename T>
 		friend const Vec2<T> operator*(const Vec2<T>& vec, const Mat2<T>& rhs) // pre-multiplication
 		{
-			return rhs * vec;
+			return Vec2<T>(vec.x() * rhs[0] + vec.y() * rhs[1], vec.x() * rhs[2] + vec.y() * rhs[3]);
 		}
 		template <typename T>
 		friend std::ostream& operator<<(std::ostream& os, const Mat2<T>& m)

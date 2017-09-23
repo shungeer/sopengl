@@ -16,7 +16,7 @@ namespace cell
 		Vec3(value_type x, value_type y, value_type z) { _v[0] = x; _v[1] = y; _v[2] = z; }
 		Vec3(const Vec2<T>& v2, value_type zz) { _v[0] = v2[0]; _v[1] = v2[1]; _v[2] = zz; }
 		Vec3(const Vec3<T>& v) { *this = v; }
-		~Vec3();
+		~Vec3(){}
 
 		// 运算符重载
 		inline const Vec3<T>& operator = (const Vec3<T>& v)
@@ -51,7 +51,7 @@ namespace cell
 		}
 		inline const Vec3<T> operator ^ (const Vec3<T>& rhs) const
 		{
-			return Vec3f(_v[1] * rhs._v[2] - _v[2] * rhs._v[1],
+			return Vec3<T>(_v[1] * rhs._v[2] - _v[2] * rhs._v[1],
 				_v[2] * rhs._v[0] - _v[0] * rhs._v[2],
 				_v[0] * rhs._v[1] - _v[1] * rhs._v[0]);
 		}
@@ -106,10 +106,11 @@ namespace cell
 			return _v[0] * _v[0] + _v[1] * _v[1] + _v[2] * _v[2];
 		}
 		// 向量单位化
-		inline const Vec3<T> normalize()
+		inline Vec3<T>& normalize()
 		{
-			value_type norm = Vec3<T>::length();
-			return Vec3<T>(_v[0]/norm, _v[1]/norm, _v[2]/norm);
+			value_type norm = (T)1.0 / Vec3<T>::length();
+			*this *= norm;
+			return *this;
 		}
 
 		// Get and Set

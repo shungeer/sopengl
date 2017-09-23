@@ -14,7 +14,7 @@ namespace cell
 		Vec2(){ _v[0] = value_type(0.0), _v[1] = value_type(0.0); }
 		Vec2(value_type x, value_type y) { _v[0] = x; _v[1] = y; }
 		Vec2(const Vec2<T>& v) { *this = v; }
-		~Vec2();
+		~Vec2(){}
 
 		// 运算符重载
 		inline const Vec2<T>& operator = (const Vec2<T>& v)
@@ -87,10 +87,11 @@ namespace cell
 			return _v[0] * _v[0] + _v[1] * _v[1];
 		}
 		// 向量单位化
-		inline const Vec2<T> normalize()
+		inline Vec2<T>& normalize()
 		{
-			value_type norm = Vec2<T>::length();
-			return Vec2<T>(_v[0]/norm, _v[1]/norm);
+			value_type norm = (T)1.0 / Vec2<T>::length();
+			*this *= norm;
+			return *this;
 		}
 
 		// Get and Set
