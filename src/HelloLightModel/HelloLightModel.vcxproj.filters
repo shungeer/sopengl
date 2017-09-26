@@ -14,14 +14,14 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="shaders">
-      <UniqueIdentifier>{246e2f81-2bc3-4590-9ddb-b22fbd483adf}</UniqueIdentifier>
+      <UniqueIdentifier>{c101ded1-4dce-4dea-bfa0-2ffc06d710ba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HelloCamera.cpp">
+    <ClCompile Include="HelloLightModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="CellCamera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
@@ -30,26 +30,59 @@
     <ClCompile Include="Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="NativeCamera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="CellCamera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMath.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec4.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="NativeCamera.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.shader">
+    <None Include="shaders\color.fs">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\vertex.shader">
+    <None Include="shaders\color.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lamp.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lamp.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\color-v.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\color-v.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\color-s.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\color-s.vs">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

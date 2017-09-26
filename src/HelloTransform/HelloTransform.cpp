@@ -1025,9 +1025,10 @@ void DrawContext7()
 	//view = glm::translate(view, glm::vec3(gView1, gView2, gView3));
 	float radius = 10.0f;
 	float camX = (float)sin(glfwGetTime()) * radius;
+	float camY = (float)sin(glfwGetTime()) * radius;
 	float camZ = (float)cos(glfwGetTime()) * radius;
 	// 摄像机位置、目标、表示世界空间中的向上向量
-	view = glm::lookAt(glm::vec3(camX, 0.0f, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	view = glm::lookAt(glm::vec3(camX, camY, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	// 投影矩阵
 	projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 	for (unsigned int i = 0; i < 10; i++)

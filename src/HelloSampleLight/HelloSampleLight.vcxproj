@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E3979D18-55B9-4421-8361-42218DCD9090}</ProjectGuid>
+    <ProjectGuid>{9D92BD33-6F64-4337-BDCD-741B96EB3725}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>HelloCamera</RootNamespace>
+    <RootNamespace>HelloSampleLight</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -84,18 +84,18 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="HelloCamera.cpp" />
-    <ClCompile Include="NativeCamera.cpp" />
+    <ClCompile Include="HelloSampleLight.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="NativeCamera.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.shader" />
-    <None Include="shaders\vertex.shader" />
+    <None Include="shaders\color.fs" />
+    <None Include="shaders\color.vs" />
+    <None Include="shaders\lamp.fs" />
+    <None Include="shaders\lamp.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

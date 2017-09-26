@@ -13,12 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="shaders">
-      <UniqueIdentifier>{246e2f81-2bc3-4590-9ddb-b22fbd483adf}</UniqueIdentifier>
+    <Filter Include="MVC">
+      <UniqueIdentifier>{261f486b-b5f9-49cc-a2b4-3d698e1d569c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HelloCamera.cpp">
+    <ClCompile Include="HelloNativeWindow.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -30,27 +30,40 @@
     <ClCompile Include="Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="NativeCamera.cpp">
-      <Filter>源文件</Filter>
+    <ClCompile Include="ViewGL.cpp">
+      <Filter>MVC</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CellMat2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMath.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="NativeCamera.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="ViewGL.h">
+      <Filter>MVC</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\fragment.shader">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="shaders\vertex.shader">
-      <Filter>shaders</Filter>
-    </None>
   </ItemGroup>
 </Project>

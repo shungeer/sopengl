@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E3979D18-55B9-4421-8361-42218DCD9090}</ProjectGuid>
+    <ProjectGuid>{1A679D9D-EBA8-422B-9C23-D64F64A7FDC2}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>HelloCamera</RootNamespace>
+    <RootNamespace>HelloMaterialModel</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -82,20 +82,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CellCamera.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="HelloCamera.cpp" />
-    <ClCompile Include="NativeCamera.cpp" />
+    <ClCompile Include="HelloMaterialModel.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="NativeCamera.h" />
+    <ClInclude Include="CellCamera.h" />
+    <ClInclude Include="CellMat2.h" />
+    <ClInclude Include="CellMat3.h" />
+    <ClInclude Include="CellMat4.h" />
+    <ClInclude Include="CellMath.h" />
+    <ClInclude Include="CellVec2.h" />
+    <ClInclude Include="CellVec3.h" />
+    <ClInclude Include="CellVec4.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.shader" />
-    <None Include="shaders\vertex.shader" />
+    <None Include="shaders\emerald.fs" />
+    <None Include="shaders\emerald.vs" />
+    <None Include="shaders\lamp.fs" />
+    <None Include="shaders\lamp.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

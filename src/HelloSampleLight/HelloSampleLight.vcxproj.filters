@@ -14,11 +14,11 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="shaders">
-      <UniqueIdentifier>{246e2f81-2bc3-4590-9ddb-b22fbd483adf}</UniqueIdentifier>
+      <UniqueIdentifier>{9a064212-620d-4c8d-b734-6eee77b91e60}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HelloCamera.cpp">
+    <ClCompile Include="HelloSampleLight.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -30,9 +30,6 @@
     <ClCompile Include="Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="NativeCamera.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -41,15 +38,18 @@
     <ClInclude Include="Shader.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="NativeCamera.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.shader">
+    <None Include="shaders\color.fs">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\vertex.shader">
+    <None Include="shaders\color.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lamp.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\lamp.vs">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
