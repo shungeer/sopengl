@@ -21,9 +21,6 @@
     <ClCompile Include="HelloModel.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CellModel.cpp">
-      <Filter>cell</Filter>
-    </ClCompile>
     <ClCompile Include="glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -32,6 +29,9 @@
     </ClCompile>
     <ClCompile Include="CellCamera.cpp">
       <Filter>cell</Filter>
+    </ClCompile>
+    <ClCompile Include="CellFileUtil.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -64,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="CellVec4.h">
       <Filter>cell</Filter>
+    </ClInclude>
+    <ClInclude Include="CellFileUtil.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

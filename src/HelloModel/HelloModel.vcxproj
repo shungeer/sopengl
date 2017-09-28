@@ -83,13 +83,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CellCamera.cpp" />
-    <ClCompile Include="CellModel.cpp" />
+    <ClCompile Include="CellFileUtil.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="HelloModel.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CellCamera.h" />
+    <ClInclude Include="CellFileUtil.h" />
     <ClInclude Include="CellMat2.h" />
     <ClInclude Include="CellMat3.h" />
     <ClInclude Include="CellMat4.h" />
