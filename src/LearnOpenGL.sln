@@ -37,6 +37,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloMaterialModel", "Hello
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloLightMap", "HelloLightMap\HelloLightMap.vcxproj", "{76535DBC-01E6-40E0-A8EC-7DBEACC3F82F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloLightCaster", "HelloLightCaster\HelloLightCaster.vcxproj", "{A41EAE6C-5D6A-4140-A545-065340C63BF7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloMutilLights", "HelloMutilLights\HelloMutilLights.vcxproj", "{3BF72C1E-D0F1-437D-8380-01D8AC989986}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -111,6 +115,14 @@ Global
 		{76535DBC-01E6-40E0-A8EC-7DBEACC3F82F}.Debug|Win32.Build.0 = Debug|Win32
 		{76535DBC-01E6-40E0-A8EC-7DBEACC3F82F}.Release|Win32.ActiveCfg = Release|Win32
 		{76535DBC-01E6-40E0-A8EC-7DBEACC3F82F}.Release|Win32.Build.0 = Release|Win32
+		{A41EAE6C-5D6A-4140-A545-065340C63BF7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A41EAE6C-5D6A-4140-A545-065340C63BF7}.Debug|Win32.Build.0 = Debug|Win32
+		{A41EAE6C-5D6A-4140-A545-065340C63BF7}.Release|Win32.ActiveCfg = Release|Win32
+		{A41EAE6C-5D6A-4140-A545-065340C63BF7}.Release|Win32.Build.0 = Release|Win32
+		{3BF72C1E-D0F1-437D-8380-01D8AC989986}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3BF72C1E-D0F1-437D-8380-01D8AC989986}.Debug|Win32.Build.0 = Debug|Win32
+		{3BF72C1E-D0F1-437D-8380-01D8AC989986}.Release|Win32.ActiveCfg = Release|Win32
+		{3BF72C1E-D0F1-437D-8380-01D8AC989986}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
