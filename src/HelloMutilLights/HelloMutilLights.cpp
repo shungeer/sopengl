@@ -183,6 +183,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	}
 	else if (key == GLFW_KEY_1 && action == GLFW_PRESS)
 	{
+		gClearColor.set(0.2f, 0.3f, 0.3f);
 		gFun = DrawContext1;
 	}
 	else if (key == GLFW_KEY_2 && action == GLFW_PRESS)
