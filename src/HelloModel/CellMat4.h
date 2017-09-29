@@ -440,6 +440,11 @@ namespace cell
 			return Mat4::scale(s, s, s);
 		}
 
+		Mat4<value_type>& scale(const Vec3<value_type>& v)
+		{
+			return Mat4::scale(v.x(), v.y(), v.z());
+		}
+
 		Mat4<value_type>& scale(value_type x, value_type y, value_type z)
 		{
 			/*m_aM[0] *= x;   m_aM[4] *= x;   m_aM[8] *= x;   m_aM[12] *= x;

@@ -16,6 +16,9 @@
     <Filter Include="cell">
       <UniqueIdentifier>{76adaca4-6e90-425d-82f5-9349fc90e30c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{696053e6-8b30-4141-9eff-1ea24ab86f7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloModel.cpp">
@@ -31,7 +34,7 @@
       <Filter>cell</Filter>
     </ClCompile>
     <ClCompile Include="CellFileUtil.cpp">
-      <Filter>源文件</Filter>
+      <Filter>cell</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -66,7 +69,15 @@
       <Filter>cell</Filter>
     </ClInclude>
     <ClInclude Include="CellFileUtil.h">
-      <Filter>头文件</Filter>
+      <Filter>cell</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\model.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\model.vs">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
