@@ -1,5 +1,9 @@
 #pragma once
-#define STB_IMAGE_IMPLEMENTATION		// 保证stb_image库加载
+//#ifndef STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION		// 保证stb_image库加载
+//#endif
+
+
 #include <string>
 
 using std::string;
@@ -14,6 +18,5 @@ namespace cell
 		static unsigned int InitTexture(const string& path, const string& directory);	// 加载文件初始化纹理对象
 	};
 }
-
 
 

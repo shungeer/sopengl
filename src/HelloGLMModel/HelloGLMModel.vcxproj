@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8C50F61B-9387-48AC-BC84-EE2441E595DC}</ProjectGuid>
+    <ProjectGuid>{085D22BA-9E30-4756-92B0-5D6485CB40DF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>HelloModel</RootNamespace>
+    <RootNamespace>HelloGLMModel</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -82,29 +82,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CellCamera.cpp" />
-    <ClCompile Include="CellFileUtil.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="HelloModel.cpp" />
-    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="HelloGLMModel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CellCamera.h" />
-    <ClInclude Include="CellFileUtil.h" />
-    <ClInclude Include="CellMacroDef.h" />
-    <ClInclude Include="CellMat2.h" />
-    <ClInclude Include="CellMat3.h" />
-    <ClInclude Include="CellMat4.h" />
-    <ClInclude Include="CellMath.h" />
-    <ClInclude Include="CellModel.h" />
-    <ClInclude Include="CellVec2.h" />
-    <ClInclude Include="CellVec3.h" />
-    <ClInclude Include="CellVec4.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\model.fs" />
-    <None Include="shaders\model.vs" />
+    <None Include="shaders\1.model_loading.fs" />
+    <None Include="shaders\1.model_loading.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

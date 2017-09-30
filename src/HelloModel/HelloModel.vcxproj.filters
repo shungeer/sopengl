@@ -71,6 +71,9 @@
     <ClInclude Include="CellFileUtil.h">
       <Filter>cell</Filter>
     </ClInclude>
+    <ClInclude Include="CellMacroDef.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\model.fs">

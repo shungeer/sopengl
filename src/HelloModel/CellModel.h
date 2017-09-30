@@ -64,17 +64,7 @@ namespace cell
 
 			setupMesh();
 		}
-		~Mesh()
-		{
-			glDeleteBuffers(1, &m_iVBO);
-			glDeleteBuffers(1, &m_iEBO);
-			glDeleteVertexArrays(1, &m_iVAO);
-
-			for (size_t i = 0; i < _textures.size(); i++)
-			{
-				glDeleteTextures(1, &_textures[i]._ID);
-			}
-		}
+		~Mesh() {}
 
 		void Draw(CShader* pShader)
 		{
@@ -104,15 +94,24 @@ namespace cell
 				glBindTexture(GL_TEXTURE_2D, _textures[i]._ID);	// 绑定纹理
 			}
 			// 绘制网格
-			glBindVertexArray(VAO());
+			glBindVertexArray(m_iVAO);
 			glDrawElements(GL_TRIANGLES, _indices.size(), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 
 			// 激活默认的纹理
 			glActiveTexture(GL_TEXTURE0);
 		}
+		void ClearMesh()
+		{
+			glDeleteBuffers(1, &m_iVBO);
+			glDeleteBuffers(1, &m_iEBO);
+			glDeleteVertexArrays(1, &m_iVAO);
 
-		unsigned int VAO() { return m_iVAO; }
+			for (size_t i = 0; i < _textures.size(); i++)
+			{
+				glDeleteTextures(1, &_textures[i]._ID);
+			}
+		}
 	private:
 		unsigned int m_iVAO, m_iVBO, m_iEBO;		// opengl对象
 		void setupMesh()
@@ -126,7 +125,6 @@ namespace cell
 			glBindVertexArray(m_iVAO);
 			// 绑定顶点缓存对象
 			glBindBuffer(GL_ARRAY_BUFFER, m_iVBO);
-			unsigned int size = _vertices.size() * sizeof(Vertex<value_type>);
 			glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(Vertex<value_type>), &_vertices.front(), GL_STATIC_DRAW);
 			// 绑定索引对象
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iEBO);
@@ -141,9 +139,9 @@ namespace cell
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex<value_type>), (void*)offsetof(Vertex<value_type>, _TexCoords));	// 法线向量
 			
 			// 解绑对象
-			glBindBuffer(GL_ARRAY_BUFFER, m_iVBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iEBO);
-			glBindVertexArray(0);
+			glBindVertexArray(0);	// 先解绑vao，因为vbo ebo需要在恢复vao时候使用
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 	};
 
@@ -158,7 +156,14 @@ namespace cell
 		string _rootDir;		// 模型文件所在根目录
 	public:
 		Model(const string& path) { this->LoadModel(path); }
-		~Model(){}
+		~Model()
+		{
+			vector<Mesh<value_type>>::iterator itr;
+			for (itr = _meshs.begin(); itr != _meshs.end(); itr++)
+			{
+				(*itr).ClearMesh();
+			}
+		}
 
 		void Draw(CShader* pShader)
 		{
@@ -224,7 +229,6 @@ namespace cell
 			for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 			{
 				Vertex<value_type> vertex;
-				Vec3<value_type> tmpV;
 				// 位置
 				vertex._Position = Vec3<value_type>(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 				// 法向量
@@ -248,13 +252,16 @@ namespace cell
 				for (unsigned int j = 0; j < face.mNumIndices; j++) indices.push_back(face.mIndices[j]);
 			}
 
-			// 抽取材质属性
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			// 漫反射贴图
-			this->LoadMaterialTextures(textures, material, aiTextureType_DIFFUSE, MaterialTexType::DIFFUSE);
-			// 镜面反射贴图
-			this->LoadMaterialTextures(textures, material, aiTextureType_SPECULAR, MaterialTexType::SPECULAR);
-
+			if (mesh->mMaterialIndex >= 0)
+			{
+				// 抽取材质属性
+				aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+				// 漫反射贴图
+				this->LoadMaterialTextures(textures, material, aiTextureType_DIFFUSE, MaterialTexType::DIFFUSE);
+				// 镜面反射贴图
+				this->LoadMaterialTextures(textures, material, aiTextureType_SPECULAR, MaterialTexType::SPECULAR);
+			}
+			
 			return Mesh<value_type>(vertices, indices, textures);
 		}
 
@@ -272,25 +279,20 @@ namespace cell
 				{
 					if (strcmp((*citer)._TexPath.c_str(), str.C_Str()) == 0)
 					{
+						textures.push_back(*citer);
 						skip = true;
 						break;
 					}
 				}
-
-				Texture texture;
 				if (!skip)	// 纹理已经被加载，不需要重复加载
 				{
+					Texture texture;
 					texture._ID = cell::CellFileUtil::InitTexture(str.C_Str(), this->_rootDir);
 					texture._Type = mType;
 					texture._TexPath = str.C_Str();
 					this->_textures_loaded.push_back(texture);			// 添加纹理
+					textures.push_back(texture);
 				}
-				else
-				{
-					texture = (*citer);
-				}
-				
-				textures.push_back(texture);
 			}
 		}
 	};

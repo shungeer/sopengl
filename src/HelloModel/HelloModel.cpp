@@ -1,6 +1,11 @@
-//#define STB_IMAGE_IMPLEMENTATION
+//#ifndef STB_IMAGE_IMPLEMENTATION
+//#define STB_IMAGE_IMPLEMENTATION		// 保证stb_image库加载
+//#endif
 
 #include <iostream>
+
+#include "CellMacroDef.h"
+
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "stb_image.h"
@@ -49,18 +54,9 @@ CellCamera camera(Vec3<float>(0.0f, 0.0f, 3.0f));
 const unsigned int mTotal = 1;
 Model<float>* gModels[mTotal];
 
-const unsigned int aTotal = 2;
-const unsigned int bTotal = 1;
-const unsigned int eTotal = 1;
-const unsigned int sTotal = 1;
-const unsigned int tTotal = 2;
-
 // opengl对象
-unsigned int gVAOs[aTotal];
-unsigned int gVBOs[bTotal];
-unsigned int gEBOs[eTotal];
+const unsigned int sTotal = 1;
 CShader* gShaders[sTotal];
-unsigned int gTexs[tTotal];
 
 // opengl清除设置
 Vec3<float> gClearColor(0.2f, 0.3f, 0.3f);	// 默认
@@ -223,6 +219,8 @@ void BuildShader()
 void BuildModel()
 {
 	gModels[0] = new Model<float>("../../context/resource/models/nanosuit/nanosuit.obj");
+	//gModels[0] = new Model<float>("G:\\3D\\data\\Zuccarello.obj");//
+	//gModels[0] = new Model<float>("../../context/resource/models/IronMan/IronMan.obj");//
 }
 
 // 加载图像
@@ -263,11 +261,11 @@ void BuildTexture()
 {
 	return;
 	// 纹理缓存
-	glGenTextures(tTotal, gTexs);
+	//glGenTextures(tTotal, gTexs);
 
 	// texture0配置
-	LoadTexImage("../../context/resource/container2.png", gTexs[0]);
-	LoadTexImage("../../context/resource/container2_specular.png", gTexs[1]);
+	//LoadTexImage("../../context/resource/container2.png", gTexs[0]);
+	//LoadTexImage("../../context/resource/container2_specular.png", gTexs[1]);
 }
 // 为着色器纹理变量指定纹理单元
 void InitTexture()
@@ -281,10 +279,10 @@ void InitTexture()
 // 清除渲染上下文
 void ClearContext()
 {
-	glDeleteVertexArrays(aTotal, gVAOs);
+	/*glDeleteVertexArrays(aTotal, gVAOs);
 	glDeleteBuffers(bTotal, gVBOs);
 	glDeleteBuffers(eTotal, gEBOs);
-	glDeleteTextures(tTotal, gTexs);
+	glDeleteTextures(tTotal, gTexs);*/
 
 	for (unsigned int i = 0; i < sTotal; i++)
 	{
