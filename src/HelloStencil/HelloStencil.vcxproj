@@ -98,6 +98,7 @@
   <ItemGroup>
     <ClCompile Include="CellCamera.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="HelloGLMStencil.cpp" />
     <ClCompile Include="HelloStencil.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -107,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\fragment.fs" />
+    <None Include="shaders\stencil.fs" />
     <None Include="shaders\vertex.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

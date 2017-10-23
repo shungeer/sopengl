@@ -71,12 +71,18 @@
     <ClCompile Include="Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="HelloGLMStencil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\fragment.fs">
       <Filter>shaders</Filter>
     </None>
     <None Include="shaders\vertex.vs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\stencil.fs">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
