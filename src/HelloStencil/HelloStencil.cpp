@@ -1,16 +1,22 @@
-#define STB_IMAGE_IMPLEMENTATION
+// HelloStencil.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "stdafx.h"
+
+#define STB_IMAGE_IMPLEMENTATION		// 保证stb_image库加载
+
 
 #include <iostream>
+
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "stb_image.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
+#include "CellCamera.h"
 #include "Shader.h"
-#include "Camera.h"
 
 using namespace std;
+using namespace cell;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -24,32 +30,34 @@ void InitTexture();
 void ClearContext();
 void DrawNULLContext();
 void DrawContext1();
-void DrawContext2();
-
 void(*gFun)();
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-const unsigned int aTotal = 2;
-const unsigned int bTotal = 2;
-const unsigned int sTotal = 2;
-const unsigned int tTotal = 2;
-
-unsigned int gVAOs[aTotal];
-unsigned int gVBOs[bTotal];
-CShader* gShaders[sTotal];
-unsigned int gTexs[tTotal];
-
-// 全局相机
-Camera gCamera(glm::vec3(0.0f, 0.0f, 3.0f));	// 以相机位置初始化
-float gLastX = (float)SCR_WIDTH / 2.0f;
-float gLastY = (float)SCR_HEIGHT / 2.0f;
+float gLastX = SCR_WIDTH / 2.0f;
+float gLastY = SCR_HEIGHT / 2.0f;
 bool gFirstMouse = true;
 
+// timing
 float gDeltaTime = 0.0f;
 float gLastFrame = 0.0f;
+
+// 相机
+CellCamera camera(Vec3<float>(0.0f, 0.0f, 3.0f));
+
+// opengl对象
+const unsigned int sTotal = 1;
+CShader* gShaders[sTotal];
+const unsigned int aTotal = 2;
+unsigned int gVAOs[aTotal];
+const unsigned int bTotal = 2;
+unsigned int gVBOs[bTotal];
+const unsigned int tTotal = 2;
+unsigned int gTexs[tTotal];
+
+// opengl清除设置
+Vec3<float> gClearColor(0.2f, 0.3f, 0.3f);	// 默认
 
 int main(int argc, CHAR* argv[])
 {
@@ -71,6 +79,7 @@ int main(int argc, CHAR* argv[])
 		return -1;
 	}
 	glfwMakeContextCurrent(window);		// 设置这个窗口的上下文是当前线程的主上下文
+	// tell GLFW to capture our mouse
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// 3.使用GLAD库获取OpenGL的函数正确地址
@@ -87,8 +96,8 @@ int main(int argc, CHAR* argv[])
 	// 5.注册回调函数（更改视口、处理手柄输入、处理错误消息等）
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);	// 更改视口
 	glfwSetKeyCallback(window, key_callback);							// 键盘输入
-	glfwSetCursorPosCallback(window, mouse_callback);					// 鼠标滑动
-	glfwSetScrollCallback(window, scroll_callback);						// 鼠标滚动
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
 
 	// 6.渲染上下文定义
 	// 1) 创建着色器
@@ -102,14 +111,18 @@ int main(int argc, CHAR* argv[])
 
 	// 7.循环渲染
 	gFun = DrawNULLContext;
-	// 开启OpenGL选项
+	// opengl状态
 	glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_ALWAYS);
+	glEnable(GL_STENCIL_TEST);
 	while (!glfwWindowShouldClose(window))
 	{
+		float currentFrame = (float)glfwGetTime();
+		gDeltaTime = currentFrame - gLastFrame;
+		gLastFrame = currentFrame;
+
 		// 渲染命令
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(gClearColor.x(), gClearColor.y(), gClearColor.z(), 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 		gFun();
 
@@ -133,36 +146,45 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 // 设置不同的键渲染不同的模型
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
+	static bool sbFill = false;
 	// 当用户按下ESC键,我们设置window窗口的WindowShouldClose属性为true
 	// 关闭应用程序
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
+	else if (key == GLFW_KEY_L && action == GLFW_PRESS)
+	{// 判断线框模式
+		if (sbFill)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		sbFill = !sbFill;
+	}
 	else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		gCamera.KeybordMove(Camera::FORWARD, gDeltaTime);
+		camera.KeybordMove(CellCamera::FORWARD, gDeltaTime);
 	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		gCamera.KeybordMove(Camera::BACKWARD, gDeltaTime);
+		camera.KeybordMove(CellCamera::BACKWARD, gDeltaTime);
 	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		gCamera.KeybordMove(Camera::LEFT, gDeltaTime);
+		camera.KeybordMove(CellCamera::LEFT, gDeltaTime);
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		gCamera.KeybordMove(Camera::RIGHT, gDeltaTime);
+		camera.KeybordMove(CellCamera::RIGHT, gDeltaTime);
 	else if (key == GLFW_KEY_0 && action == GLFW_PRESS)
 	{
 		gFun = DrawNULLContext;
 	}
 	else if (key == GLFW_KEY_1 && action == GLFW_PRESS)
 	{
+		gClearColor.set(0.2f, 0.3f, 0.3f);
 		gFun = DrawContext1;
 	}
-	else if (key == GLFW_KEY_2 && action == GLFW_PRESS)
-	{
-		gFun = DrawContext2;
-	}
-	gCamera._vPosition.y = 0.5f;	// 与xz平面平行
 }
 
-// 鼠标移动
+// 鼠标输入
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
 	if (gFirstMouse)
@@ -178,19 +200,19 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	gLastX = (float)xpos;
 	gLastY = (float)ypos;
 
-	gCamera.MouseMove(xoffset, yoffset);
+	camera.MouseMove(xoffset, yoffset);
 }
-// 鼠标滚轮
+
+// 鼠标滚轮输入
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	gCamera.MouseScroll((float)yoffset);
+	camera.MouseScroll((float)yoffset);
 }
 
 // 创建所有着色器程序
 void BuildShader()
 {
-	gShaders[0] = new CShader("shaders/vertex.shader", "shaders/fragment.shader");
-	gShaders[1] = new CShader("shaders/depthview.vs", "shaders/depthview.fs");
+	gShaders[0] = new CShader("shaders/vertex.vs", "shaders/fragment.fs");
 }
 // 创建所有渲染模型
 void BuildModel()
@@ -250,37 +272,64 @@ void BuildModel()
 		5.0f, -0.5f, -5.0f, 2.0f, 2.0f
 	};
 
-	// 缓存生成
 	glGenVertexArrays(aTotal, gVAOs);
 	glGenBuffers(bTotal, gVBOs);
 
-	// cubevao
-	// 绑定对象目标和数据
+	// cube vao
 	glBindVertexArray(gVAOs[0]);
 	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-	// 指定顶点属性
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(sizeof(float)* 3));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	// 完成glVertexAttribPointer后，表示已经从当前绑定的VBO中获取数据，可以解绑VBO
-	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
-	glBindVertexArray(0);					// 解绑VAO，配置完VAO，暂时还不使用，先解绑
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
-	// planevao
-	// 绑定对象目标和数据
+	// plane vao
 	glBindVertexArray(gVAOs[1]);
 	glBindBuffer(GL_ARRAY_BUFFER, gVBOs[1]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
-	// 指定顶点属性
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(sizeof(float)* 3));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(1);
-	// 完成glVertexAttribPointer后，表示已经从当前绑定的VBO中获取数据，可以解绑VBO
-	glBindBuffer(GL_ARRAY_BUFFER, 0);		// 解绑VBO
-	glBindVertexArray(0);					// 解绑VAO，配置完VAO，暂时还不使用，先解绑
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+// 加载图像
+void LoadTexImage(const char* path, unsigned int texid)
+{
+	// 加载图片数据
+	int width, height, nrChannels;
+	stbi_set_flip_vertically_on_load(true);	// 纹理坐标原点在左下角，图片原点在右上角，需要反转
+	unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+	if (data)
+	{
+		GLenum format;
+		if (nrChannels == 1) format = GL_RED;
+		else if (nrChannels == 3) format = GL_RGB;
+		else if (nrChannels == 4) format = GL_RGBA;
+
+		// 绑定纹理目标，配置纹理属性
+		glBindTexture(GL_TEXTURE_2D, texid);
+		// 纹理包围方式
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		// 纹理过滤方式
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// 绑定图像数据
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);	// 生成指定级别的mipmap
+	}
+	else
+	{
+		cout << "Failed to load texture path:" << path << endl;
+	}
+	// 释放图像数据
+	stbi_image_free(data);
 }
 // 创建所有纹理属性
 void BuildTexture()
@@ -288,65 +337,15 @@ void BuildTexture()
 	// 纹理缓存
 	glGenTextures(tTotal, gTexs);
 
-	// texture0配置
-	// 绑定纹理目标，配置纹理属性
-	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
-	// 纹理包围方式
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// 纹理过滤方式
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// 加载图片数据
-	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true);	// 纹理坐标原点在左下角，图片原点在右上角，需要反转
-	unsigned char* data = stbi_load("../../context/resource/marble.png", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		// 绑定图像数据
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);	// 生成指定级别的mipmap
-	}
-	else
-	{
-		cout << "Failed to load texture0" << endl;
-	}
-	// 释放图像数据
-	stbi_image_free(data);
-
-	// texture1配置
-	// 绑定纹理目标，配置纹理属性
-	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
-	// 纹理包围方式
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// 纹理过滤方式
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// 加载图片数据
-	stbi_set_flip_vertically_on_load(true);	// 纹理坐标原点在左下角，图片原点在右上角，需要反转
-	data = stbi_load("../../context/resource/metal.jpg", &width, &height, &nrChannels, 0);
-	if (data)
-	{
-		// 绑定图像数据
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);	// 生成指定级别的mipmap
-	}
-	else
-	{
-		cout << "Failed to load texture1" << endl;
-	}
-	// 释放图像数据
-	stbi_image_free(data);
+	// texture配置
+	LoadTexImage("../../context/resource/marble.png", gTexs[0]);
+	LoadTexImage("../../context/resource/metal.jpg", gTexs[1]);
 }
 // 为着色器纹理变量指定纹理单元
 void InitTexture()
 {
 	gShaders[0]->use();
 	gShaders[0]->setInt("texture1", 0);
-
-	gShaders[1]->use();
-	gShaders[1]->setInt("texture1", 0);
 }
 // 清除渲染上下文
 void ClearContext()
@@ -366,68 +365,39 @@ void DrawNULLContext()
 	return;
 }
 
+// 
 void DrawContext1()
 {
+	Mat4<float> projection;
+	Mat4<float> view;
+	Mat4<float> model;
+	projection.perspective(camera._fZoom, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	view = camera.GetLookAt();
+
 	gShaders[0]->use();
-	// 设定变换矩阵
-	glm::mat4 model, view, projection;
-	// 视图矩阵
-	// view = gCamera.GetLookAt();// glm的lookat矩阵
-	view = gCamera.CalculateLookAt();	// 手动计算的lookat矩阵
-	// 投影矩阵
-	projection = glm::perspective(glm::radians(gCamera._fZoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-	gShaders[0]->setMat4("view", view);
-	gShaders[0]->setMat4("projection", projection);
-	// cubes
-	glBindVertexArray(gVAOs[0]);
+	gShaders[0]->setMatf4("projection", projection);
+	gShaders[0]->setMatf4("view", view);
+
 	glActiveTexture(GL_TEXTURE0);
+
+	// cube1
+	glBindVertexArray(gVAOs[0]);
 	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
-	model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-	gShaders[0]->setMat4("model", model);
+	model.translate(Vec3<float>(-1.0f, 0.f, -1.f));
+	gShaders[0]->setMatf4("model", model);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
-	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-	gShaders[0]->setMat4("model", model);
+	// cube2
+	model.identity();
+	model.translate(Vec3<float>(2.0f, 0.f, 0.f));
+	gShaders[0]->setMatf4("model", model);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
-	// floor
-	glBindVertexArray(gVAOs[1]);
-	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
-	gShaders[0]->setMat4("model", glm::mat4());
-	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 
-	float currentFrame = (float)glfwGetTime();
-	gDeltaTime = currentFrame - gLastFrame;
-	gLastFrame = currentFrame;
-}
-
-void DrawContext2()
-{
-	gShaders[1]->use();
-	// 设定变换矩阵
-	glm::mat4 model, view, projection;
-	// 视图矩阵
-	// view = gCamera.GetLookAt();// glm的lookat矩阵
-	view = gCamera.CalculateLookAt();	// 手动计算的lookat矩阵
-	// 投影矩阵
-	projection = glm::perspective(glm::radians(gCamera._fZoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-	gShaders[1]->setMat4("view", view);
-	gShaders[1]->setMat4("projection", projection);
-	// cubes
-	glBindVertexArray(gVAOs[0]);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
-	model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -1.0f));
-	gShaders[1]->setMat4("model", model);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	model = glm::mat4();
-	model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
-	gShaders[1]->setMat4("model", model);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-	// floor
+	// plane
 	glBindVertexArray(gVAOs[1]);
 	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
-	gShaders[1]->setMat4("model", glm::mat4());
+	model.identity();
+	gShaders[0]->setMatf4("model", model);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
 

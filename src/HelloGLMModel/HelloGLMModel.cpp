@@ -78,8 +78,10 @@ int main()
 
 	// load models
 	// -----------
-	Model ourModel("../../context/resource/models/nanosuit/nanosuit.obj");
+	//Model ourModel("../../context/resource/models/nanosuit/nanosuit.obj");
 	//Model ourModel("../../context/resource/models/IronMan/IronMan.obj");
+	Model ourModel("G:\\3D\\data\\dodecahedron.obj");
+	//Model ourModel("G:\\3D\\data\\jzb865er6v-IronMan\\IronMan\\IronMan.obj");
 
 	// draw in wireframe
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

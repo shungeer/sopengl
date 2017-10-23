@@ -1,16 +1,11 @@
 #ifndef MODEL_H
 #define MODEL_H
-
 #include <glad/glad.h> 
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <stb_image.h>
+//#include <stb_image.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-#include "mesh.h"
 #include "Shader.h"
 
 #include <string>
@@ -19,7 +14,152 @@
 #include <iostream>
 #include <map>
 #include <vector>
+
+#include "Shader.h"
+#include "CellVec3.h"
+#include "CellFileUtil.h"
+
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <vector>
 using namespace std;
+using std::string;
+using std::stringstream;
+using std::vector;
+using cell::Vec2;
+using cell::Vec3;
+
+struct Vertex {
+	// position
+	Vec3<float> Position;
+	// normal
+	Vec3<float> Normal;
+	// texCoords
+	Vec2<float> TexCoords;
+	// tangent
+	//glm::vec3 Tangent;
+	// bitangent
+	//glm::vec3 Bitangent;
+	bool _existNormal;		// 是否存在法线
+	bool _existTex;			// 是否存在纹理
+};
+
+struct Texture {
+	unsigned int id;
+	string type;
+	aiString path;
+};
+
+class Mesh {
+public:
+	/*  Mesh Data  */
+	vector<Vertex> vertices;
+	vector<unsigned int> indices;
+	vector<Texture> textures;
+
+	/*  Functions  */
+	// constructor
+	Mesh(const vector<Vertex>& vertices, const vector<unsigned int>& indices, const vector<Texture>& textures)
+	{
+		this->vertices = vertices;
+		this->indices = indices;
+		this->textures = textures;
+
+		// now that we have all the required data, set the vertex buffers and its attribute pointers.
+		setupMesh();
+	}
+
+	// render the mesh
+	void Draw(CShader* shader)
+	{
+		// bind appropriate textures
+		unsigned int diffuseNr = 1;
+		unsigned int specularNr = 1;
+		unsigned int normalNr = 1;
+		unsigned int heightNr = 1;
+		for (unsigned int i = 0; i < textures.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i); // active proper texture unit before binding
+			// retrieve texture number (the N in diffuse_textureN)
+			stringstream ss;
+			string number;
+			string name = textures[i].type;
+			if (name == "texture_diffuse")
+				ss << diffuseNr++; // transfer unsigned int to stream
+			else if (name == "texture_specular")
+				ss << specularNr++; // transfer unsigned int to stream
+			else if (name == "texture_normal")
+				ss << normalNr++; // transfer unsigned int to stream
+			else if (name == "texture_height")
+				ss << heightNr++; // transfer unsigned int to stream
+			number = ss.str();
+			// now set the sampler to the correct texture unit
+			shader->setInt((name + number).c_str(), i);
+			//glUniform1i(glGetUniformLocation(shader., (name + number).c_str()), i);
+			// and finally bind the texture
+			glBindTexture(GL_TEXTURE_2D, textures[i].id);
+		}
+
+		// draw mesh
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
+		// always good practice to set everything back to defaults once configured.
+		glActiveTexture(GL_TEXTURE0);
+	}
+
+private:
+	/*  Render data  */
+	unsigned int VAO, VBO, EBO;
+
+	/*  Functions    */
+	// initializes all the buffer objects/arrays
+	void setupMesh()
+	{
+		// create buffers/arrays
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+
+		glBindVertexArray(VAO);
+		// load data into vertex buffers
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		// A great thing about structs is that their memory layout is sequential for all its items.
+		// The effect is that we can simply pass a pointer to the struct and it translates perfectly to a glm::vec3/2 array which
+		// again translates to 3/2 floats which translates to a byte array.
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices.front(), GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices.front(), GL_STATIC_DRAW);
+
+		// set the vertex attribute pointers
+		// vertex Positions
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		// vertex normals
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+		// vertex texture coords
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+		cout << "sizeof(Vertex)=" << sizeof(Vertex) << endl;
+		cout << "offsetof(Vertex, Normal)=" << offsetof(Vertex, Normal) << endl;
+		cout << "offsetof(Vertex, TexCoords)=" << offsetof(Vertex, TexCoords) << endl;
+		//// vertex tangent
+		//glEnableVertexAttribArray(3);
+		//glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
+		//// vertex bitangent
+		//glEnableVertexAttribArray(4);
+		//glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+};
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
@@ -40,7 +180,7 @@ public:
 	}
 
 	// draws the model, and thus all its meshes
-	void Draw(Shader shader)
+	void Draw(CShader* shader)
 	{
 		for (unsigned int i = 0; i < meshes.size(); i++)
 			meshes[i].Draw(shader);
@@ -97,39 +237,39 @@ private:
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			Vertex vertex;
-			glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
+			Vec3<float> vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
 			// positions
-			vector.x = mesh->mVertices[i].x;
-			vector.y = mesh->mVertices[i].y;
-			vector.z = mesh->mVertices[i].z;
+			vector[0] = mesh->mVertices[i].x;
+			vector[1] = mesh->mVertices[i].y;
+			vector[2] = mesh->mVertices[i].z;
 			vertex.Position = vector;
 			// normals
 			if (mesh->mNormals == NULL)
 			{
-				vector.x = 0.f;
-				vector.y = 0.f;
-				vector.z = 0.f;
+				vector[0] = 0.f;
+				vector[1] = 0.f;
+				vector[2] = 0.f;
 			}
 			else
 			{
-				vector.x = mesh->mNormals[i].x;
-				vector.y = mesh->mNormals[i].y;
-				vector.z = mesh->mNormals[i].z;
+				vector[0] = mesh->mNormals[i].x;
+				vector[1] = mesh->mNormals[i].y;
+				vector[2] = mesh->mNormals[i].z;
 			}
 
 			vertex.Normal = vector;
 			// texture coordinates
 			if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
 			{
-				glm::vec2 vec;
+				Vec2<float> vec;
 				// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't 
 				// use models where a vertex can have multiple texture coordinates so we always take the first set (0).
-				vec.x = mesh->mTextureCoords[0][i].x;
-				vec.y = mesh->mTextureCoords[0][i].y;
+				vec[0] = mesh->mTextureCoords[0][i].x;
+				vec[1] = mesh->mTextureCoords[0][i].y;
 				vertex.TexCoords = vec;
 			}
 			else
-				vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+				vertex.TexCoords = Vec2<float>(0.0f, 0.0f);
 			//// tangent
 			//vector.x = mesh->mTangents[i].x;
 			//vector.y = mesh->mTangents[i].y;
@@ -213,7 +353,7 @@ private:
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma)
 {
-	string filename = string(path);
+	/*string filename = string(path);
 	filename = directory + '/' + filename;
 
 	unsigned int textureID;
@@ -248,6 +388,7 @@ unsigned int TextureFromFile(const char *path, const string &directory, bool gam
 		stbi_image_free(data);
 	}
 
-	return textureID;
+	return textureID;*/
+	return 1;
 }
 #endif

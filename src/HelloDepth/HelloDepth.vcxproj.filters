@@ -46,5 +46,11 @@
     <None Include="shaders\vertex.shader">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\depthview.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\depthview.vs">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

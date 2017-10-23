@@ -37,6 +37,9 @@ namespace cell
 		Vec3<T> _Position;	// 位置向量
 		Vec3<T> _Normal;		// 法线向量
 		Vec2<float> _TexCoords;	// 纹理坐标
+
+		bool _existNormal;		// 是否存在法线
+		bool _existTex;			// 是否存在纹理
 	};
 
 	struct Texture
@@ -128,7 +131,7 @@ namespace cell
 			glBufferData(GL_ARRAY_BUFFER, _vertices.size() * sizeof(Vertex<value_type>), &_vertices.front(), GL_STATIC_DRAW);
 			// 绑定索引对象
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iEBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(_indices)* sizeof(unsigned int), &_indices.front(), GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, _indices.size()* sizeof(unsigned int), &_indices.front(), GL_STATIC_DRAW);
 
 			// 指定顶点位置
 			glEnableVertexAttribArray(0);
@@ -138,6 +141,9 @@ namespace cell
 			glEnableVertexAttribArray(2);
 			glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex<value_type>), (void*)offsetof(Vertex<value_type>, _TexCoords));	// 法线向量
 			
+			cout << "sizeof(Vertex)=" << sizeof(Vertex<value_type>) << endl;
+			cout << "offsetof(Vertex, Normal)=" << offsetof(Vertex<value_type>, _Normal) << endl;
+			cout << "offsetof(Vertex, TexCoords)=" << offsetof(Vertex<value_type>, _TexCoords) << endl;
 			// 解绑对象
 			glBindVertexArray(0);	// 先解绑vao，因为vbo ebo需要在恢复vao时候使用
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -155,7 +161,10 @@ namespace cell
 		vector<Mesh<value_type>> _meshs;	// 加载模型文件中所有的mesh
 		string _rootDir;		// 模型文件所在根目录
 	public:
-		Model(const string& path) { this->LoadModel(path); }
+		Model(const string& path) 
+		{
+			this->LoadModel(path);
+		}
 		~Model()
 		{
 			vector<Mesh<value_type>>::iterator itr;
@@ -232,15 +241,26 @@ namespace cell
 				// 位置
 				vertex._Position = Vec3<value_type>(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 				// 法向量
-				vertex._Normal = Vec3<value_type>(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+				if (mesh->mNormals == NULL)
+				{
+					vertex._existNormal = false;
+					vertex._Normal = Vec3<value_type>(0.f, 1.f, 0.f);
+				}
+				else
+				{
+					vertex._Normal = Vec3<value_type>(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+					vertex._existNormal = true;
+				}
 				// 纹理坐标
 				if (mesh->mTextureCoords[0])		// 判断纹理坐标是否存在	如果模型有多种纹理坐标仅仅取第一个
 				{
 					vertex._TexCoords = Vec2<float>(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+					vertex._existTex = true;
 				}
 				else // 不存在的话，默认为0
 				{
 					vertex._TexCoords = Vec2<float>(0.f, 0.f);
+					vertex._existTex = false;
 				}
 				vertices.push_back(vertex);
 			}

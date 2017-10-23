@@ -13,15 +13,56 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="cell">
-      <UniqueIdentifier>{76adaca4-6e90-425d-82f5-9349fc90e30c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="shaders">
-      <UniqueIdentifier>{696053e6-8b30-4141-9eff-1ea24ab86f7e}</UniqueIdentifier>
+      <UniqueIdentifier>{992fe6d6-4149-4edf-93f1-c3825be44ce5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HelloModel.cpp">
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellCamera.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMat4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellMath.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CellVec4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HelloStencil.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CellCamera.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="glad.c">
@@ -30,59 +71,12 @@
     <ClCompile Include="Shader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CellCamera.cpp">
-      <Filter>cell</Filter>
-    </ClCompile>
-    <ClCompile Include="CellFileUtil.cpp">
-      <Filter>cell</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CellModel.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="CellCamera.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellMat2.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellMat3.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellMat4.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellMath.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellVec2.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellVec3.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellVec4.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellFileUtil.h">
-      <Filter>cell</Filter>
-    </ClInclude>
-    <ClInclude Include="CellMacroDef.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="model.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shaders\model.fs">
+    <None Include="shaders\fragment.fs">
       <Filter>shaders</Filter>
     </None>
-    <None Include="shaders\model.vs">
+    <None Include="shaders\vertex.vs">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>

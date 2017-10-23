@@ -14,6 +14,7 @@
 
 #include "CellCamera.h"
 #include "CellModel.h"
+//#include "model.h"
 #include "Shader.h"
 
 using namespace std;
@@ -53,6 +54,7 @@ CellCamera camera(Vec3<float>(0.0f, 0.0f, 3.0f));
 // 模型
 const unsigned int mTotal = 1;
 Model<float>* gModels[mTotal];
+//Model* gModels[mTotal];
 
 // opengl对象
 const unsigned int sTotal = 1;
@@ -218,9 +220,12 @@ void BuildShader()
 // 创建所有渲染模型
 void BuildModel()
 {
-	gModels[0] = new Model<float>("../../context/resource/models/nanosuit/nanosuit.obj");
-	//gModels[0] = new Model<float>("G:\\3D\\data\\Zuccarello.obj");//
+	gModels[0] = new Model<float>("G:\\3D\\data\\nanosuit\\nanosuit.obj");
+	//gModels[0] = new Model<float>("G:\\3D\\data\\cube.obj");//
 	//gModels[0] = new Model<float>("../../context/resource/models/IronMan/IronMan.obj");//
+
+	//gModels[0] = new Model("G:\\3D\\data\\cube.obj");//
+	//gModels[0] = new Model("../../context/resource/models/nanosuit/nanosuit.obj");
 }
 
 // 加载图像

@@ -92,6 +92,8 @@
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\depthview.fs" />
+    <None Include="shaders\depthview.vs" />
     <None Include="shaders\fragment.shader" />
     <None Include="shaders\vertex.shader" />
   </ItemGroup>
