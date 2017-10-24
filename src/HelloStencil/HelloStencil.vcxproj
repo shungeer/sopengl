@@ -109,6 +109,8 @@
   <ItemGroup>
     <None Include="shaders\fragment.fs" />
     <None Include="shaders\stencil.fs" />
+    <None Include="shaders\stencilplane.fs" />
+    <None Include="shaders\stencilplane.vs" />
     <None Include="shaders\vertex.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

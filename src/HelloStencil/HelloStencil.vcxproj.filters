@@ -85,5 +85,11 @@
     <None Include="shaders\stencil.fs">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\stencilplane.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\stencilplane.vs">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
