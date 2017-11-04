@@ -47,6 +47,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloGLMModel", "HelloGLMMo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloStencil", "HelloStencil\HelloStencil.vcxproj", "{24E592A8-A2B4-4237-941E-91FCF90C30A5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloBlend", "HelloBlend\HelloBlend.vcxproj", "{FD90A80C-E179-4B61-B41A-4074276755E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -141,6 +143,10 @@ Global
 		{24E592A8-A2B4-4237-941E-91FCF90C30A5}.Debug|Win32.Build.0 = Debug|Win32
 		{24E592A8-A2B4-4237-941E-91FCF90C30A5}.Release|Win32.ActiveCfg = Release|Win32
 		{24E592A8-A2B4-4237-941E-91FCF90C30A5}.Release|Win32.Build.0 = Release|Win32
+		{FD90A80C-E179-4B61-B41A-4074276755E4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FD90A80C-E179-4B61-B41A-4074276755E4}.Debug|Win32.Build.0 = Debug|Win32
+		{FD90A80C-E179-4B61-B41A-4074276755E4}.Release|Win32.ActiveCfg = Release|Win32
+		{FD90A80C-E179-4B61-B41A-4074276755E4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
