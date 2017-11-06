@@ -85,5 +85,11 @@
     <None Include="shaders\blend-grass.vs">
       <Filter>shaders</Filter>
     </None>
+    <None Include="shaders\blend-window.fs">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\blend-window.vs">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -107,6 +107,8 @@
   <ItemGroup>
     <None Include="shaders\blend-grass.fs" />
     <None Include="shaders\blend-grass.vs" />
+    <None Include="shaders\blend-window.fs" />
+    <None Include="shaders\blend-window.vs" />
     <None Include="shaders\fragment.fs" />
     <None Include="shaders\vertex.vs" />
   </ItemGroup>

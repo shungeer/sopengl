@@ -24,6 +24,9 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include <map>
+using std::map;
+
 using namespace std;
 using namespace cell;
 
@@ -39,6 +42,7 @@ void InitTexture();
 void ClearContext();
 void DrawNULLContext();
 void DrawContext1();
+void DrawContext2();
 void(*gFun)();
 
 // settings
@@ -56,13 +60,13 @@ float gLastFrame = 0.0f;
 CellCamera camera(Vec3<float>(0.0f, 0.0f, 3.0f));
 
 // opengl对象
-const unsigned int sTotal = 2;
+const unsigned int sTotal = 3;
 CShader* gShaders[sTotal];
 const unsigned int aTotal = 3;
 unsigned int gVAOs[aTotal];
 const unsigned int bTotal = 3;
 unsigned int gVBOs[bTotal];
-const unsigned int tTotal = 3;
+const unsigned int tTotal = 4;
 unsigned int gTexs[tTotal];
 
 // opengl清除设置
@@ -190,6 +194,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		gClearColor.set(0.2f, 0.3f, 0.3f);
 		gFun = DrawContext1;
 	}
+	else if (key == GLFW_KEY_2 && action == GLFW_PRESS)
+	{
+		gClearColor.set(0.4f, 0.3f, 0.5f);
+		gFun = DrawContext2;
+	}
 }
 
 // 鼠标输入
@@ -222,6 +231,7 @@ void BuildShader()
 {
 	gShaders[0] = new CShader("shaders/vertex.vs", "shaders/fragment.fs");
 	gShaders[1] = new CShader("shaders/blend-grass.vs", "shaders/blend-grass.fs");
+	gShaders[2] = new CShader("shaders/blend-window.vs", "shaders/blend-window.fs");
 }
 // 创建所有渲染模型
 void BuildModel()
@@ -371,6 +381,7 @@ void BuildTexture()
 	LoadTexImage("../../context/resource/marble.png", gTexs[0]);
 	LoadTexImage("../../context/resource/metal.jpg", gTexs[1]);
 	LoadTexImage("../../context/resource/grass.png", gTexs[2]);
+	LoadTexImage("../../context/resource/blending_transparent_window.png", gTexs[3]);
 }
 // 为着色器纹理变量指定纹理单元
 void InitTexture()
@@ -485,5 +496,89 @@ void DrawContext1()
 		gShaders[1]->setMatf4("model", model);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
+	glBindVertexArray(0);
+}
+
+int cmp(const void *a, const void *b)
+{
+	return (float*)a - (float*)b;
+}
+
+void DrawContext2()
+{
+	// transparent vegetation locations
+	// --------------------------------
+	Vec3<float> vegetation[] =
+	{
+		Vec3<float>(-1.5f, 0.0f, -0.48f),
+		Vec3<float>(1.5f, 0.0f, 0.51f),
+		Vec3<float>(0.0f, 0.0f, 0.7f),
+		Vec3<float>(-0.3f, 0.0f, -2.3f),
+		Vec3<float>(0.5f, 0.0f, -0.6f)
+	};
+
+	Mat4<float> projection;
+	Mat4<float> view;
+	Mat4<float> model;
+	projection.perspective(camera._fZoom, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+	view = camera.GetLookAt();
+
+	gShaders[0]->use();
+	gShaders[0]->setMatf4("projection", projection);
+	gShaders[0]->setMatf4("view", view);
+
+	glActiveTexture(GL_TEXTURE0);
+	glEnable(GL_BLEND);	// 启用混合
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// 绘制实景
+	// cube1
+	glBindVertexArray(gVAOs[0]);
+	glBindTexture(GL_TEXTURE_2D, gTexs[1]);
+	model.identity();
+	model.translate(Vec3<float>(-1.0f, 0.f, -1.f));
+	gShaders[0]->use();
+	gShaders[0]->setMatf4("model", model);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	// cube2
+	model.identity();
+	model.translate(Vec3<float>(2.0f, 0.f, 0.f));
+	gShaders[0]->use();
+	gShaders[0]->setMatf4("model", model);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glBindVertexArray(0);
+	// plane
+	glBindVertexArray(gVAOs[1]);
+	glBindTexture(GL_TEXTURE_2D, gTexs[0]);
+	model.identity();
+	gShaders[0]->use();
+	gShaders[0]->setMatf4("model", model);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+	// vegetation
+	gShaders[2]->use();
+	gShaders[2]->setMatf4("projection", projection);
+	gShaders[2]->setMatf4("view", view);
+	glBindVertexArray(gVAOs[2]);
+	glBindTexture(GL_TEXTURE_2D, gTexs[3]);
+
+	// 计算 窗口与相机距离
+	map<float, Vec3<float>> disMap;
+	float tmpDis;
+	for (int i = 0; i < 5; i++)
+	{
+		tmpDis = sqrt(fabs(vegetation[i].dot(camera._vPosition)));
+		disMap[tmpDis] = vegetation[i];
+	}
+
+	map<float, Vec3<float>>::reverse_iterator rit;
+	for (rit = disMap.rbegin(); rit != disMap.rend(); rit++)
+	{
+		model.identity();
+		model.translate((*rit).second);
+		gShaders[2]->setMatf4("model", model);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
 	glBindVertexArray(0);
 }
