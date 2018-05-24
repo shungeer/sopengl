@@ -49,6 +49,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloStencil", "HelloStenci
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloBlend", "HelloBlend\HelloBlend.vcxproj", "{FD90A80C-E179-4B61-B41A-4074276755E4}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloRTT", "HelloRTT\HelloRTT.vcxproj", "{C8383D70-A67F-4B8E-BE0D-6DCFEF7942EE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloGLMRTT", "HelloGLMRTT\HelloGLMRTT.vcxproj", "{67EFD207-C550-4FB6-92C0-E200979B8A86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -147,6 +151,14 @@ Global
 		{FD90A80C-E179-4B61-B41A-4074276755E4}.Debug|Win32.Build.0 = Debug|Win32
 		{FD90A80C-E179-4B61-B41A-4074276755E4}.Release|Win32.ActiveCfg = Release|Win32
 		{FD90A80C-E179-4B61-B41A-4074276755E4}.Release|Win32.Build.0 = Release|Win32
+		{C8383D70-A67F-4B8E-BE0D-6DCFEF7942EE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8383D70-A67F-4B8E-BE0D-6DCFEF7942EE}.Debug|Win32.Build.0 = Debug|Win32
+		{C8383D70-A67F-4B8E-BE0D-6DCFEF7942EE}.Release|Win32.ActiveCfg = Release|Win32
+		{C8383D70-A67F-4B8E-BE0D-6DCFEF7942EE}.Release|Win32.Build.0 = Release|Win32
+		{67EFD207-C550-4FB6-92C0-E200979B8A86}.Debug|Win32.ActiveCfg = Debug|Win32
+		{67EFD207-C550-4FB6-92C0-E200979B8A86}.Debug|Win32.Build.0 = Debug|Win32
+		{67EFD207-C550-4FB6-92C0-E200979B8A86}.Release|Win32.ActiveCfg = Release|Win32
+		{67EFD207-C550-4FB6-92C0-E200979B8A86}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
